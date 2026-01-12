@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon"><i class="fas fa-shopping-cart"></i></span>
+                    <span class="logo-text">Cart<span class="highlight">Link</span></span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link active"><i class="fas fa-home"></i> Dashboard</a>
+                <div class="nav-section">
+                    <span class="nav-section-title">Kelola</span>
+                </div>
+                <a href="products.html" class="sidebar-link"><i class="fas fa-box"></i> Produk</a>
+                <a href="orders.html" class="sidebar-link"><i class="fas fa-shopping-bag"></i> Pesanan</a>
+                <a href="categories.html" class="sidebar-link"><i class="fas fa-th-large"></i> Kategori</a>
+                <div class="nav-section">
+                    <span class="nav-section-title">Halaman</span>
+                </div>
+                <a href="pages.html" class="sidebar-link"><i class="fas fa-file-alt"></i> Edit Halaman</a>
+                <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Pengaturan</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="admin-avatar">SA</div>
+                    <div class="admin-info">
+                        <h4 id="admin-name">Super Admin</h4>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="admin-title">Dashboard</h1>
+                </div>
+                <div class="admin-header-right">
+                    <a href="../index.html" class="btn btn-outline btn-sm" target="_blank"><i
+                            class="fas fa-external-link-alt"></i> Lihat Website</a>
+                    <button onclick="logout()" class="btn btn-danger btn-sm"><i class="fas fa-sign-out-alt"></i>
+                        Logout</button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon primary"><i class="fas fa-box"></i></div>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 12%</span>
+                        </div>
+                        <h3 id="total-products">...</h3>
+                        <p>Total Produk</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon success"><i class="fas fa-shopping-bag"></i></div>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 8%</span>
+                        </div>
+                        <h3 id="total-orders">0</h3>
+                        <p>Total Pesanan</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon warning"><i class="fas fa-wallet"></i></div>
+                            <span class="stat-change positive"><i class="fas fa-arrow-up"></i> 15%</span>
+                        </div>
+                        <h3 id="total-revenue">Rp 0</h3>
+                        <p>Total Pendapatan</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon danger"><i class="fas fa-clock"></i></div>
+                            <span class="stat-change negative"><i class="fas fa-arrow-down"></i> 3%</span>
+                        </div>
+                        <h3 id="pending-orders">0</h3>
+                        <p>Pesanan Pending</p>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Pesanan Terbaru</h2>
+                        <a href="orders.html" class="btn btn-sm btn-outline">Lihat Semua</a>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID Pesanan</th>
+                                <th>Pelanggan</th>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders">
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-500)">
+                                    Belum ada pesanan
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="admin.js?v=10"></script>
+    <!-- Diagnostic Script (Temporary) -->
+    <script src="../js/test-db.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check auth first
+            checkAuth();
+
+            // Wait for dataReady if needed, or just load
+            if (typeof productsData !== 'undefined' && productsData.length > 0) {
+                loadDashboardStats();
+                loadRecentOrders();
+            } else {
+                document.addEventListener('dataReady', () => {
+                    loadDashboardStats();
+                    loadRecentOrders();
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

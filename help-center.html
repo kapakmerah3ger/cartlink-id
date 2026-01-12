@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Bantuan - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+                    class="logo-text">Cart<span class="highlight">Link</span></span></a>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Beranda</a>
+                <a href="products.html" class="nav-link">Produk</a>
+                <a href="categories.html" class="nav-link">Kategori</a>
+                <a href="about.html" class="nav-link">Tentang</a>
+                <a href="contact.html" class="nav-link">Kontak</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-link" title="Keranjang Belanja">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-counter">0</span>
+                </a>
+                <button class="btn btn-outline btn-sm" onclick="location.href='admin/login.html'"><i
+                        class="fas fa-user"></i>
+                    Admin</button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Beranda</a> <i class="fas fa-chevron-right"></i> <span>Pusat
+                    Bantuan</span></div>
+            <h1>Pusat Bantuan</h1>
+            <p>Temukan jawaban untuk pertanyaan Anda</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="help-grid">
+                <div class="help-card">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Cara Order</h3>
+                    <p>Panduan lengkap cara melakukan pembelian</p>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-credit-card"></i>
+                    <h3>Pembayaran</h3>
+                    <p>Metode pembayaran yang tersedia</p>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-download"></i>
+                    <h3>Download Produk</h3>
+                    <p>Cara mengakses produk digital Anda</p>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-undo"></i>
+                    <h3>Refund</h3>
+                    <p>Kebijakan pengembalian dana</p>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-user-shield"></i>
+                    <h3>Keamanan Akun</h3>
+                    <p>Tips menjaga keamanan akun Anda</p>
+                </div>
+                <div class="help-card">
+                    <i class="fas fa-headset"></i>
+                    <h3>Hubungi Support</h3>
+                    <p>Butuh bantuan lebih lanjut?</p>
+                </div>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title" style="text-align:center;margin-bottom:2rem">Pertanyaan yang Sering Diajukan
+                </h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">Bagaimana cara melakukan pembelian? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Pilih produk yang Anda inginkan, klik tombol "Beli Sekarang", isi form order dengan data yang
+                            lengkap, pilih metode pembayaran, dan lakukan transfer sesuai nominal yang tertera. Setelah
+                            pembayaran dikonfirmasi, Anda akan menerima akses produk melalui email atau WhatsApp.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Metode pembayaran apa saja yang tersedia? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Kami menerima pembayaran melalui transfer bank (BCA, BNI, Mandiri, BRI) dan e-wallet (GoPay,
+                            OVO, DANA). Semua metode pembayaran aman dan terenkripsi.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Berapa lama produk dikirim setelah pembayaran? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Produk digital akan dikirimkan secara instan setelah pembayaran dikonfirmasi. Maksimal 1x24
+                            jam untuk konfirmasi manual. Jika menggunakan pembayaran otomatis, akses produk langsung
+                            tersedia.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Apakah bisa refund jika produk tidak sesuai? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Refund dapat diajukan dalam 7 hari setelah pembelian jika produk tidak sesuai deskripsi atau
+                            terdapat kerusakan file. Untuk mengajukan refund, hubungi customer service kami dengan
+                            menyertakan bukti pembelian dan alasan refund.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Apakah produk mendapat update gratis? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Ya! Semua produk yang Anda beli akan mendapatkan update gratis selamanya. Kami akan
+                            mengirimkan notifikasi dan link download terbaru melalui email jika ada update.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">Bagaimana cara menghubungi customer service? <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="faq-answer">
+                        <p>Anda dapat menghubungi kami melalui WhatsApp di +62 812-3456-7890 (respon tercepat), email di
+                            support@cartlink.id, atau melalui form kontak di halaman Contact Us. Tim support kami siap
+                            membantu 24/7.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:3rem">
+                <p style="color:var(--gray-400);margin-bottom:1rem">Tidak menemukan jawaban yang Anda cari?</p>
+                <a href="contact.html" class="btn btn-primary"><i class="fas fa-envelope"></i> Hubungi Kami</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo"><span class="logo-icon"><i
+                                class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                                class="highlight">Link</span></span></a>
+                    <p>Platform terbaik untuk produk digital berkualitas.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Bantuan</h4>
+                    <ul>
+                        <li><a href="help-center.html">Pusat Bantuan</a></li>
+                        <li><a href="terms.html">Syarat & Ketentuan</a></li>
+                        <li><a href="privacy.html">Kebijakan Privasi</a></li>
+                        <li><a href="contact.html">Kontak Kami</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CartLink.id. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+                if (!isActive) item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

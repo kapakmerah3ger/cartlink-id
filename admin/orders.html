@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Pesanan - Admin CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo"><span class="logo-icon"><i
+                            class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                            class="highlight">Link</span></span></a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i> Dashboard</a>
+                <div class="nav-section"><span class="nav-section-title">Kelola</span></div>
+                <a href="products.html" class="sidebar-link"><i class="fas fa-box"></i> Produk</a>
+                <a href="orders.html" class="sidebar-link active"><i class="fas fa-shopping-bag"></i> Pesanan</a>
+                <a href="categories.html" class="sidebar-link"><i class="fas fa-th-large"></i> Kategori</a>
+                <div class="nav-section"><span class="nav-section-title">Halaman</span></div>
+                <a href="pages.html" class="sidebar-link"><i class="fas fa-file-alt"></i> Edit Halaman</a>
+                <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Pengaturan</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="admin-avatar">SA</div>
+                    <div class="admin-info">
+                        <h4 id="admin-name">Super Admin</h4><span>Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="admin-title">Kelola Pesanan</h1>
+                </div>
+                <div class="admin-header-right">
+                    <button onclick="logout()" class="btn btn-danger btn-sm"><i
+                            class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon warning"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <h3 id="pending-count">0</h3>
+                        <p>Menunggu Pembayaran</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon primary"><i class="fas fa-check"></i></div>
+                        </div>
+                        <h3 id="paid-count">0</h3>
+                        <p>Sudah Dibayar</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon success"><i class="fas fa-check-double"></i></div>
+                        </div>
+                        <h3 id="completed-count">0</h3>
+                        <p>Selesai</p>
+                    </div>
+                </div>
+
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Daftar Pesanan</h2>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID Pesanan</th>
+                                <th>Pelanggan</th>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Pembayaran</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="admin.js?v=10"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            checkAuth();
+            loadAdminOrders();
+
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            document.getElementById('pending-count').textContent = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('paid-count').textContent = orders.filter(o => o.status === 'paid').length;
+            document.getElementById('completed-count').textContent = orders.filter(o => o.status === 'completed').length;
+        });
+    </script>
+</body>
+
+</html>

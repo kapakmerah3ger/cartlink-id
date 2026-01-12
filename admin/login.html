@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon"><i class="fas fa-shopping-cart"></i></span>
+                    <span class="logo-text">Cart<span class="highlight">Link</span></span>
+                </a>
+                <h1>Admin Panel</h1>
+                <p>Masuk untuk mengelola website</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" required placeholder="Masukkan username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required placeholder="Masukkan password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember">
+                        <span class="checkmark"></span>
+                        Ingat saya
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+            </form>
+            <div class="login-footer">
+                <p>Demo: username <strong>admin</strong>, password <strong>admin123</strong></p>
+                <a href="../index.html"><i class="fas fa-arrow-left"></i> Kembali ke Website</a>
+            </div>
+            <div style="text-align:center;margin-top:20px;">
+                <button onclick="clearSession()"
+                    style="background:none;border:none;color:#666;text-decoration:underline;cursor:pointer;font-size:0.8rem;">
+                    Reset Sesi (Jika Gagal Login)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function clearSession() {
+            localStorage.clear();
+            alert('Sesi dibersihkan. Silakan coba login lagi.');
+            window.location.reload();
+        }
+        // Debugging
+        console.log('Login Script Loaded');
+
+        // Check if already logged in
+        try {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                console.log('User already logged in, redirecting...');
+                window.location.href = 'dashboard.html'; // Explicit extension to be safe
+            }
+        } catch (e) {
+            console.error('Local Storage Error:', e);
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.querySelector('.toggle-password i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Login form
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                console.log('Login form submitted');
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                console.log('Attempting login with:', username);
+
+                // Simple validation
+                // Accept 'admin' or 'admin@cartlink.id'
+                const isUserValid = (username === 'admin' || username === 'admin@cartlink.id');
+                const isPassValid = (password === 'admin123');
+
+                if (isUserValid && isPassValid) {
+                    console.log('Credentials valid. Saving session...');
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('adminUser', JSON.stringify({
+                        username: username,
+                        name: 'Super Admin',
+                        role: 'superadmin'
+                    }));
+
+                    alert('Login Berhasil! Mengalihkan...');
+                    window.location.replace('dashboard.html'); // Force replace
+                } else {
+                    console.log('Invalid credentials');
+                    alert('Gagal! Username: admin / Password: admin123');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

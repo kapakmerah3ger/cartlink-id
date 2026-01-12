@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Produk - Admin CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo"><span class="logo-icon"><i
+                            class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                            class="highlight">Link</span></span></a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i> Dashboard</a>
+                <div class="nav-section"><span class="nav-section-title">Kelola</span></div>
+                <a href="products.html" class="sidebar-link active"><i class="fas fa-box"></i> Produk</a>
+                <a href="orders.html" class="sidebar-link"><i class="fas fa-shopping-bag"></i> Pesanan</a>
+                <a href="categories.html" class="sidebar-link"><i class="fas fa-th-large"></i> Kategori</a>
+                <div class="nav-section"><span class="nav-section-title">Halaman</span></div>
+                <a href="pages.html" class="sidebar-link"><i class="fas fa-file-alt"></i> Edit Halaman</a>
+                <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Pengaturan</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="admin-avatar">SA</div>
+                    <div class="admin-info">
+                        <h4 id="admin-name">Super Admin</h4><span>Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="admin-title">Kelola Produk</h1>
+                </div>
+                <div class="admin-header-right">
+                    <button onclick="openProductModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i>
+                        Tambah Produk</button>
+                    <button onclick="logout()" class="btn btn-danger btn-sm"><i
+                            class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Daftar Produk</h2>
+                        <span id="product-count" style="color:var(--gray-400)">0 produk</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Produk</th>
+                                <th>Kategori</th>
+                                <th>Harga</th>
+                                <th>Rating</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="admin-modal" id="product-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3 id="modal-title">Tambah Produk Baru</h3>
+                <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="product-form">
+                <div class="admin-modal-body">
+                    <input type="hidden" id="product-id">
+                    <div class="form-group">
+                        <label for="product-title">Nama Produk <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="product-title" required placeholder="Masukkan nama produk">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Kategori <span style="color:var(--danger)">*</span></label>
+                        <select id="product-category" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="ebook">Ebook</option>
+                            <option value="kelas">Kelas Digital</option>
+                            <option value="video">Video Animasi</option>
+                            <option value="template">Template</option>
+                            <option value="software">Software & Plugin</option>
+                            <option value="audio">Audio & Musik</option>
+                        </select>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                        <div class="form-group">
+                            <label for="product-price">Harga Jual (Rp) <span
+                                    style="color:var(--danger)">*</span></label>
+                            <input type="number" id="product-price" required placeholder="Contoh: 150000">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-original-price">Harga Asli (Rp)</label>
+                            <input type="number" id="product-original-price" placeholder="Contoh: 300000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Gambar Produk</label>
+                        <div class="image-upload-container">
+                            <div class="image-upload-tabs">
+                                <button type="button" class="image-tab active" onclick="switchImageTab('upload')">
+                                    <i class="fas fa-upload"></i> Upload Gambar
+                                </button>
+                                <button type="button" class="image-tab" onclick="switchImageTab('url')">
+                                    <i class="fas fa-link"></i> URL Gambar
+                                </button>
+                            </div>
+                            <div class="image-tab-content" id="upload-tab">
+                                <div class="image-upload-area"
+                                    onclick="document.getElementById('product-image-file').click()">
+                                    <input type="file" id="product-image-file" accept="image/*"
+                                        onchange="handleImageUpload(this)" hidden>
+                                    <div class="upload-placeholder" id="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Klik untuk upload atau drag & drop</p>
+                                        <span>PNG, JPG, WEBP (max 5MB)</span>
+                                    </div>
+                                    <div class="upload-preview" id="upload-preview" style="display:none">
+                                        <img id="preview-image" src="" alt="Preview">
+                                        <button type="button" class="remove-image" onclick="removeImage(event)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="image-tab-content" id="url-tab" style="display:none">
+                                <input type="url" id="product-image" placeholder="https://example.com/image.jpg"
+                                    onchange="previewUrlImage(this.value)">
+                                <div class="url-preview" id="url-preview" style="display:none">
+                                    <img id="url-preview-image" src="" alt="Preview">
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="product-image-data">
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Deskripsi <span style="color:var(--danger)">*</span></label>
+                        <textarea id="product-description" required rows="3" placeholder="Deskripsi produk"></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
+                        <div class="form-group">
+                            <label for="product-rating">Rating (0-5)</label>
+                            <input type="number" id="product-rating" min="0" max="5" step="0.1"
+                                placeholder="Contoh: 4.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-reviews">Jumlah Review</label>
+                            <input type="number" id="product-reviews" min="0" placeholder="Contoh: 150">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-badge">Badge</label>
+                            <select id="product-badge">
+                                <option value="">Tidak ada</option>
+                                <option value="Best Seller">Best Seller</option>
+                                <option value="New">New</option>
+                                <option value="Hot">Hot</option>
+                                <option value="Diskon">Diskon</option>
+                                <option value="Promo">Promo</option>
+                                <option value="Limited">Limited</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="product-featured">
+                            <span class="checkmark"></span>
+                            Tampilkan di halaman utama (Featured)
+                        </label>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="admin.js?v=10"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            checkAuth();
+
+            // Function to render products and update count
+            function renderProductsPage() {
+                loadAdminProducts();
+                const countEl = document.getElementById('product-count');
+                const products = (typeof getProductsData === 'function') ? getProductsData() : (window.productsData || []);
+                if (countEl) {
+                    countEl.textContent = products.length + ' produk';
+                }
+            }
+
+            // Initial render attempt
+            renderProductsPage();
+
+            // Also listen for dataReady event when Supabase data is loaded
+            document.addEventListener('dataReady', function () {
+                console.log('DataReady received in products.html, refreshing products...');
+                renderProductsPage();
+            });
+        });
+    </script>
+</body>
+
+</html>

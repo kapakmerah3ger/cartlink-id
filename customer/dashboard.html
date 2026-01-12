@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pelanggan - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../admin/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            background: #0f172a;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            margin-bottom: 3rem;
+        }
+
+        .nav-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .nav-logo .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            color: var(--gray-400);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+
+        .sidebar-menu a i {
+            font-size: 1.1rem;
+            width: 24px;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            color: #ef4444;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h3 {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .icon-blue {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .icon-purple {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+        }
+
+        .icon-green {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: var(--gray-400);
+        }
+
+        /* Products Grid */
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .purchased-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .empty-state {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            border: 2px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--gray-400);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-icon"><i class="fas fa-shopping-cart"></i></span>
+                <span class="logo-text">CartLink</span>
+            </a>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="my-products.html"><i class="fas fa-download"></i> Produk Saya</a></li>
+                <li><a href="profile.html"><i class="fas fa-user-edit"></i> Edit Profil</a></li>
+                <li><a href="../index.html"><i class="fas fa-shopping-bag"></i> Belanja Lagi</a></li>
+            </ul>
+            <a href="#" class="logout-btn" onclick="logoutUser()">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div class="welcome-section">
+                <h1 id="welcome-name">Halo, Selamat Datang!</h1>
+                <p>Kelola produk digital dan informasi akun Anda di sini.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon icon-blue"><i class="fas fa-box"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Produk</h3>
+                        <p id="stat-products">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-purple"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Pesanan</h3>
+                        <p id="stat-orders">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-green"><i class="fas fa-star"></i></div>
+                    <div class="stat-info">
+                        <h3>Review Diberikan</h3>
+                        <p>0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <h2>Akses Cepat Produk Saya</h2>
+                <a href="my-products.html" class="btn btn-outline btn-sm">Lihat Semua</a>
+            </div>
+
+            <div id="recent-products" class="purchased-products">
+                <!-- Products will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const user = getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update UI with user info
+            document.getElementById('welcome-name').textContent = `Halo, ${user.name}!`;
+
+            // Load stats
+            const purchasedIds = user.purchasedProducts || [];
+            document.getElementById('stat-products').textContent = purchasedIds.length;
+
+            const allOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            const userOrders = allOrders.filter(o => o.customer.email === user.email);
+            document.getElementById('stat-orders').textContent = userOrders.length;
+
+            // Load products
+            const container = document.getElementById('recent-products');
+            if (purchasedIds.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Belum Ada Produk</h3>
+                        <p>Anda belum memiliki produk digital apa pun. Silakan jelajahi koleksi kami.</p>
+                        <a href="../products.html" class="btn btn-primary">Jelajahi Produk</a>
+                    </div>
+                `;
+            } else {
+                // Show last 3 products
+                const recentIds = purchasedIds.slice(-3).reverse();
+                recentIds.forEach(id => {
+                    const product = getProductById(id);
+                    if (product) {
+                        const card = document.createElement('div');
+                        card.className = 'product-card';
+                        card.innerHTML = `
+                            <div class="product-image">
+                                <img src="${product.image}" alt="${product.title}">
+                            </div>
+                            <div class="product-content">
+                                <span class="product-category">${product.categoryLabel}</span>
+                                <h3 class="product-title">${product.title}</h3>
+                                <div class="product-footer">
+                                    <a href="#" class="btn btn-primary btn-sm" style="width: 100%;"><i class="fas fa-download"></i> Download / Akses</a>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Kategori - Admin CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo"><span class="logo-icon"><i
+                            class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                            class="highlight">Link</span></span></a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link"><i class="fas fa-home"></i> Dashboard</a>
+                <div class="nav-section"><span class="nav-section-title">Kelola</span></div>
+                <a href="products.html" class="sidebar-link"><i class="fas fa-box"></i> Produk</a>
+                <a href="orders.html" class="sidebar-link"><i class="fas fa-shopping-bag"></i> Pesanan</a>
+                <a href="categories.html" class="sidebar-link active"><i class="fas fa-th-large"></i> Kategori</a>
+                <div class="nav-section"><span class="nav-section-title">Halaman</span></div>
+                <a href="pages.html" class="sidebar-link"><i class="fas fa-file-alt"></i> Edit Halaman</a>
+                <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Pengaturan</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="admin-avatar">SA</div>
+                    <div class="admin-info">
+                        <h4 id="admin-name">Super Admin</h4><span>Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <h1 class="admin-title">Kelola Kategori</h1>
+                </div>
+                <div class="admin-header-right">
+                    <button onclick="openCategoryModal()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i>
+                        Tambah Kategori</button>
+                    <button onclick="logout()" class="btn btn-danger btn-sm"><i
+                            class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Daftar Kategori</h2>
+                        <span id="category-count" style="color:var(--gray-400)">0 kategori</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Icon</th>
+                                <th>ID / Slug</th>
+                                <th>Nama Kategori</th>
+                                <th>Deskripsi</th>
+                                <th>Jumlah Produk</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="admin-modal" id="category-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h3 id="category-modal-title">Tambah Kategori Baru</h3>
+                <button class="modal-close" onclick="closeCategoryModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="category-form" onsubmit="saveCategory(event)">
+                <div class="admin-modal-body">
+                    <input type="hidden" id="cat-old-id">
+                    <div class="form-group">
+                        <label for="cat-id">ID / Slug <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="cat-id" required placeholder="Contoh: ebook, kelas-digital">
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-title">Nama Kategori <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="cat-title" required placeholder="Contoh: Ebook Premium">
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-icon">Icon Class (FontAwesome) <span
+                                style="color:var(--danger)">*</span></label>
+                        <input type="text" id="cat-icon" required placeholder="Contoh: fa-book">
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-count">Label Jumlah (Opsional)</label>
+                        <input type="text" id="cat-count" placeholder="Contoh: 500+ Produk">
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-description">Deskripsi <span style="color:var(--danger)">*</span></label>
+                        <textarea id="cat-description" required rows="3" placeholder="Deskripsi kategori"></textarea>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="admin.js?v=10"></script>
+    <script>
+        // Load categories - async function that fetches from Supabase directly 
+        async function loadAdminCategories() {
+            const container = document.getElementById('categories-table-body');
+            if (!container) return;
+
+            // Get Supabase client fresh each time to avoid timing issues
+            const supabase = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (!supabase) {
+                console.error('Supabase client not available');
+                return;
+            }
+
+            // First try window cache
+            let cats = window.categoriesData || [];
+
+            // If empty, fetch directly from Supabase
+            if (cats.length === 0) {
+                console.log('Categories cache empty, fetching from Supabase...');
+                try {
+                    const { data, error } = await supabase
+                        .from('categories')
+                        .select('*');
+
+                    if (error) throw error;
+                    cats = data || [];
+                    window.categoriesData = cats;
+                    console.log('Loaded', cats.length, 'categories from Supabase');
+                } catch (err) {
+                    console.error('Error fetching categories:', err);
+                    // Use default categories as fallback
+                    cats = [
+                        { id: 'ebook', title: 'Ebook', slug: 'ebook', icon: 'fa-book', description: 'Koleksi ebook digital berkualitas', count: '500+ Produk' },
+                        { id: 'kelas', title: 'Kelas Digital', slug: 'kelas-digital', icon: 'fa-graduation-cap', description: 'Kelas online dan kursus digital', count: '200+ Kelas' },
+                        { id: 'video', title: 'Video Animasi', slug: 'video-animasi', icon: 'fa-video', description: 'Video animasi dan konten multimedia', count: '300+ Video' },
+                        { id: 'template', title: 'Template', slug: 'template', icon: 'fa-file-alt', description: 'Template desain dan dokumen', count: '400+ Template' },
+                        { id: 'software', title: 'Software & Plugin', slug: 'software-plugin', icon: 'fa-laptop-code', description: 'Software, tools, dan plugin', count: '100+ Tools' },
+                        { id: 'audio', title: 'Audio & Musik', slug: 'audio-musik', icon: 'fa-music', description: 'Audio, musik, dan sound effect', count: '250+ Audio' }
+                    ];
+                    window.categoriesData = cats;
+                }
+            }
+
+            document.getElementById('category-count').textContent = cats.length + ' kategori';
+
+            if (cats.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:2rem;color:var(--gray-500)">
+                            Belum ada kategori
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            container.innerHTML = cats.map(cat => `
+                <tr>
+                    <td><div style="font-size: 1.5rem; color: var(--primary)"><i class="fas ${cat.icon}"></i></div></td>
+                    <td><code>${cat.id}</code></td>
+                    <td><strong>${cat.title}</strong></td>
+                    <td style="max-width: 300px; font-size: 0.85rem; color: var(--gray-500)">${cat.description || '-'}</td>
+                    <td>${cat.count || '-'}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="table-btn edit" onclick="editCategory('${cat.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="table-btn delete" onclick="deleteCategory('${cat.id}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openCategoryModal(catId = null) {
+            const modal = document.getElementById('category-modal');
+            const title = document.getElementById('category-modal-title');
+            const form = document.getElementById('category-form');
+            const cats = window.categoriesData || [];
+
+            if (catId) {
+                const cat = cats.find(c => c.id === catId);
+                if (cat) {
+                    title.textContent = 'Edit Kategori';
+                    document.getElementById('cat-old-id').value = cat.id;
+                    document.getElementById('cat-id').value = cat.id;
+                    document.getElementById('cat-id').readOnly = true;
+                    document.getElementById('cat-title').value = cat.title;
+                    document.getElementById('cat-icon').value = cat.icon;
+                    document.getElementById('cat-count').value = cat.count || '';
+                    document.getElementById('cat-description').value = cat.description;
+                }
+            } else {
+                title.textContent = 'Tambah Kategori Baru';
+                form.reset();
+                document.getElementById('cat-old-id').value = '';
+                document.getElementById('cat-id').readOnly = false;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').classList.remove('active');
+        }
+
+        async function saveCategory(e) {
+            e.preventDefault();
+
+            const supabase = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (!supabase) {
+                alert('Database not connected');
+                return;
+            }
+
+            const oldId = document.getElementById('cat-old-id').value;
+            const newId = document.getElementById('cat-id').value;
+
+            const catData = {
+                id: newId,
+                title: document.getElementById('cat-title').value,
+                icon: document.getElementById('cat-icon').value,
+                count: document.getElementById('cat-count').value,
+                description: document.getElementById('cat-description').value
+            };
+
+            try {
+                if (oldId) {
+                    const { error } = await supabase
+                        .from('categories')
+                        .update(catData)
+                        .eq('id', oldId);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('categories')
+                        .insert([catData]);
+                    if (error) throw error;
+                }
+
+                closeCategoryModal();
+                alert('Kategori berhasil disimpan!');
+                window.location.reload();
+
+            } catch (err) {
+                console.error('Error saving category:', err);
+                alert('Gagal menyimpan kategori: ' + err.message);
+            }
+        }
+
+        function editCategory(id) {
+            openCategoryModal(id);
+        }
+
+        async function deleteCategory(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
+                const supabase = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (!supabase) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('categories')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+
+                    alert('Kategori berhasil dihapus!');
+                    window.location.reload();
+                } catch (err) {
+                    console.error('Error deleting category:', err);
+                    alert('Gagal menghapus kategori: ' + err.message);
+                }
+            }
+        }
+
+        // Make functions globally available
+        window.loadAdminCategories = loadAdminCategories;
+        window.openCategoryModal = openCategoryModal;
+        window.closeCategoryModal = closeCategoryModal;
+        window.saveCategory = saveCategory;
+        window.editCategory = editCategory;
+        window.deleteCategory = deleteCategory;
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', async function () {
+            console.log('Categories page loaded');
+
+            // Check auth - use try/catch in case checkAuth is not available
+            try {
+                if (typeof checkAuth === 'function') {
+                    checkAuth();
+                }
+            } catch (e) {
+                console.warn('Auth check failed:', e);
+            }
+
+            // Load categories
+            await loadAdminCategories();
+
+            // Also listen for dataReady event
+            document.addEventListener('dataReady', function () {
+                console.log('DataReady received, refreshing categories...');
+                loadAdminCategories();
+            });
+        });
+    </script>
+</body>
+
+</html>

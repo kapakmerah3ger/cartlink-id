@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hubungi Kami - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+                    class="logo-text">Cart<span class="highlight">Link</span></span></a>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index.html" class="nav-link">Beranda</a>
+                <a href="products.html" class="nav-link">Produk</a>
+                <a href="categories.html" class="nav-link">Kategori</a>
+                <a href="about.html" class="nav-link">Tentang</a>
+                <a href="contact.html" class="nav-link active">Kontak</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-link" title="Keranjang Belanja">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-counter">0</span>
+                </a>
+                <button class="btn btn-outline btn-sm" onclick="location.href='admin/login.html'"><i
+                        class="fas fa-user"></i>
+                    Admin</button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Beranda</a> <i class="fas fa-chevron-right"></i>
+                <span>Kontak</span>
+            </div>
+            <h1>Hubungi Kami</h1>
+            <p>Kami siap membantu Anda kapan saja</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="contact-section">
+                <div class="contact-info">
+                    <h2>Informasi Kontak</h2>
+                    <p>Jangan ragu untuk menghubungi kami jika Anda memiliki pertanyaan atau membutuhkan bantuan.</p>
+
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>support@cartlink.id</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fab fa-whatsapp"></i>
+                        <div>
+                            <h4>WhatsApp</h4>
+                            <p>+62 812-3456-7890</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telepon</h4>
+                            <p>+62 21-1234-5678</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Alamat</h4>
+                            <p>Jl. Digital Raya No. 123<br>Jakarta Selatan, 12345<br>Indonesia</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Jam Operasional</h4>
+                            <p>Senin - Jumat: 09:00 - 18:00 WIB<br>Sabtu: 09:00 - 15:00 WIB<br>Support 24/7 via WhatsApp
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <h2>Kirim Pesan</h2>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap <span>*</span></label>
+                            <input type="text" id="name" name="name" required placeholder="Masukkan nama Anda">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span>*</span></label>
+                            <input type="email" id="email" name="email" required placeholder="Masukkan email Anda">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subjek <span>*</span></label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Pilih subjek</option>
+                                <option value="Pertanyaan Produk">Pertanyaan Produk</option>
+                                <option value="Bantuan Pembelian">Bantuan Pembelian</option>
+                                <option value="Masalah Teknis">Masalah Teknis</option>
+                                <option value="Pengajuan Refund">Pengajuan Refund</option>
+                                <option value="Kerjasama">Kerjasama</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Pesan <span>*</span></label>
+                            <textarea id="message" name="message" required placeholder="Tuliskan pesan Anda..."
+                                rows="5"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
+                            <i class="fas fa-paper-plane"></i> Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo"><span class="logo-icon"><i
+                                class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                                class="highlight">Link</span></span></a>
+                    <p>Platform terbaik untuk produk digital berkualitas.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Bantuan</h4>
+                    <ul>
+                        <li><a href="help-center.html">Pusat Bantuan</a></li>
+                        <li><a href="terms.html">Syarat & Ketentuan</a></li>
+                        <li><a href="privacy.html">Kebijakan Privasi</a></li>
+                        <li><a href="contact.html">Kontak Kami</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CartLink.id. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', initContactForm);</script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kategori Produk - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+                    class="logo-text">Cart<span class="highlight">Link</span></span></a>
+            <div class="nav-menu" id="nav-menu">
+                <a href="index" class="nav-link">Beranda</a>
+                <a href="products" class="nav-link">Produk</a>
+                <a href="categories" class="nav-link active">Kategori</a>
+                <a href="about" class="nav-link">Tentang</a>
+                <a href="contact" class="nav-link">Kontak</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart" class="cart-link" title="Keranjang Belanja">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-counter">0</span>
+                </a>
+                <button class="btn btn-outline btn-sm" onclick="location.href='admin/login.html'"><i
+                        class="fas fa-user"></i>
+                    Admin</button>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="page-header">
+        <div class="container">
+            <div class="breadcrumb"><a href="index">Beranda</a> <i class="fas fa-chevron-right"></i>
+                <span>Kategori</span>
+            </div>
+            <h1>Kategori Produk</h1>
+            <p>Pilih kategori produk digital yang Anda butuhkan</p>
+        </div>
+    </section>
+
+    <section class="section categories-section">
+        <div class="container">
+            <div class="categories-grid" id="categories-container">
+                <!-- Categories will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index" class="logo"><span class="logo-icon"><i
+                                class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
+                                class="highlight">Link</span></span></a>
+                    <p>Platform terbaik untuk produk digital berkualitas.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Bantuan</h4>
+                    <ul>
+                        <li><a href="help-center">Pusat Bantuan</a></li>
+                        <li><a href="terms">Syarat & Ketentuan</a></li>
+                        <li><a href="privacy">Kebijakan Privasi</a></li>
+                        <li><a href="contact">Kontak Kami</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CartLink.id. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

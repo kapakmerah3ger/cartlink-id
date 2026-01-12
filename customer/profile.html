@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profil - CartLink.id</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../admin/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            background: #0f172a;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1e293b;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            margin-bottom: 3rem;
+        }
+
+        .nav-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            color: var(--gray-400);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.25rem;
+            color: #ef4444;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .profile-form-card {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            max-width: 800px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .profile-info h1 {
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info p {
+            color: var(--gray-400);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--gray-300);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .form-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .success {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="../index.html" class="nav-logo">
+                <span class="logo-icon"><i class="fas fa-shopping-cart"></i></span>
+                <span class="logo-text">CartLink</span>
+            </a>
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html"><i class="fas fa-th-large"></i> Dashboard</a></li>
+                <li><a href="my-products.html"><i class="fas fa-download"></i> Produk Saya</a></li>
+                <li><a href="profile.html" class="active"><i class="fas fa-user-edit"></i> Edit Profil</a></li>
+                <li><a href="../index.html"><i class="fas fa-shopping-bag"></i> Belanja Lagi</a></li>
+            </ul>
+            <a href="#" class="logout-btn" onclick="logoutUser()">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div class="profile-form-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="avatar-initial">U</div>
+                    <div class="profile-info">
+                        <h1 id="user-display-name">Nama Pengguna</h1>
+                        <p id="user-display-email">email@example.com</p>
+                    </div>
+                </div>
+
+                <form id="profile-form">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Nama Lengkap</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email (Tidak dapat diubah)</label>
+                            <input type="email" id="email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>No. HP / WhatsApp</label>
+                            <input type="tel" id="whatsapp" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Ganti Password (Kosongkan jika tidak ingin mengubah)</label>
+                            <input type="password" id="password" placeholder="••••••••">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div id="notif" class="notification success">
+        <i class="fas fa-check-circle"></i>
+        <span>Profil berhasil diperbarui!</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const user = getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Fill form
+            document.getElementById('name').value = user.name;
+            document.getElementById('email').value = user.email;
+            document.getElementById('whatsapp').value = user.whatsapp;
+
+            // Update header
+            document.getElementById('user-display-name').textContent = user.name;
+            document.getElementById('user-display-email').textContent = user.email;
+            document.getElementById('avatar-initial').textContent = user.name.charAt(0).toUpperCase();
+
+            document.getElementById('profile-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const updatedData = {
+                    name: document.getElementById('name').value,
+                    whatsapp: document.getElementById('whatsapp').value
+                };
+
+                const newPassword = document.getElementById('password').value;
+                if (newPassword) {
+                    updatedData.password = newPassword;
+                }
+
+                const result = updateUserInfo(updatedData);
+                if (result.success) {
+                    // Update header again
+                    document.getElementById('user-display-name').textContent = result.user.name;
+                    document.getElementById('avatar-initial').textContent = result.user.name.charAt(0).toUpperCase();
+
+                    // Show notification
+                    const notif = document.getElementById('notif');
+                    notif.classList.add('show');
+                    setTimeout(() => notif.classList.remove('show'), 3000);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
