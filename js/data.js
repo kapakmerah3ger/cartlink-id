@@ -1,5 +1,6 @@
 // ==================== Supabase Initialization ====================
-const supabase = (typeof getSupabase === 'function') ? getSupabase() : null;
+// Use a different name to avoid conflict with global 'supabase' from CDN
+const supabaseClient = (typeof getSupabase === 'function') ? getSupabase() : null;
 
 // ==================== Global Data Containers ====================
 // Use window.* to ensure these are globally accessible across all scripts
@@ -28,21 +29,25 @@ let categoriesData = window.categoriesData;
 
 // ==================== Data Fetching Functions ====================
 async function fetchProducts() {
-    if (!supabase) return [];
+    if (!supabaseClient) {
+        console.warn('Supabase client not available for fetching products');
+        return [];
+    }
     try {
-        const { data, error } = await supabase
+        console.log('Fetching products from Supabase...');
+        const { data, error } = await supabaseClient
             .from('products')
             .select('*')
             .order('id', { ascending: true });
 
         if (error) throw error;
 
+        console.log('Products fetched:', data?.length || 0);
         // Map snake_case database columns to camelCase for frontend
         return (data || []).map(p => ({
             ...p,
             categoryLabel: p.category_label,
             originalPrice: p.original_price,
-            // Add other mappings if needed
         }));
     } catch (err) {
         console.error('Error fetching products:', err);
@@ -51,7 +56,7 @@ async function fetchProducts() {
 }
 
 async function fetchCategories() {
-    if (!supabase) return [];
+    if (!supabaseClient) return [];
     try {
         const { data, error } = await supabase
             .from('categories')
@@ -139,7 +144,7 @@ function generateOrderId() {
 async function saveOrder(order) {
     ordersData.push(order); // Local update
 
-    if (supabase) {
+    if (supabaseClient) {
         try {
             const dbOrder = {
                 id: order.orderId,
@@ -150,7 +155,7 @@ async function saveOrder(order) {
                 status: 'pending'
             };
 
-            const { error } = await supabase.from('orders').insert([dbOrder]);
+            const { error } = await supabaseClient.from('orders').insert([dbOrder]);
             if (error) throw error;
             console.log('Order saved to Supabase');
         } catch (err) {
