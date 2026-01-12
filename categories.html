@@ -17,10 +17,10 @@
 <body>
     <nav class="navbar scrolled" id="navbar">
         <div class="container">
-            <a href="index" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+            <a href="/" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
                     class="logo-text">Cart<span class="highlight">Link</span></span></a>
             <div class="nav-menu" id="nav-menu">
-                <a href="index" class="nav-link">Beranda</a>
+                <a href="/" class="nav-link">Beranda</a>
                 <a href="products" class="nav-link">Produk</a>
                 <a href="categories" class="nav-link active">Kategori</a>
                 <a href="about" class="nav-link">Tentang</a>
@@ -41,7 +41,7 @@
 
     <section class="page-header">
         <div class="container">
-            <div class="breadcrumb"><a href="index">Beranda</a> <i class="fas fa-chevron-right"></i>
+            <div class="breadcrumb"><a href="/">Beranda</a> <i class="fas fa-chevron-right"></i>
                 <span>Kategori</span>
             </div>
             <h1>Kategori Produk</h1>
@@ -61,9 +61,8 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="index" class="logo"><span class="logo-icon"><i
-                                class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
-                                class="highlight">Link</span></span></a>
+                    <a href="/" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+                            class="logo-text">Cart<span class="highlight">Link</span></span></a>
                     <p>Platform terbaik untuk produk digital berkualitas.</p>
                 </div>
                 <div class="footer-links">
@@ -86,6 +85,19 @@
     <script src="js/data.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // Wait for data to be ready before rendering categories
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.categoriesData && window.categoriesData.length > 0) {
+                renderCategories();
+            } else {
+                document.addEventListener('dataReady', function () {
+                    console.log('Data ready, rendering categories...');
+                    renderCategories();
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

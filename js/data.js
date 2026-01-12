@@ -56,13 +56,18 @@ async function fetchProducts() {
 }
 
 async function fetchCategories() {
-    if (!supabaseClient) return [];
+    if (!supabaseClient) {
+        console.warn('Supabase client not available for fetching categories');
+        return [];
+    }
     try {
-        const { data, error } = await supabase
+        console.log('Fetching categories from Supabase...');
+        const { data, error } = await supabaseClient
             .from('categories')
             .select('*');
 
         if (error) throw error;
+        console.log('Categories fetched:', data?.length || 0);
         return data || [];
     } catch (err) {
         console.error('Error fetching categories:', err);

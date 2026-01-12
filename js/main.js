@@ -639,7 +639,7 @@ function showOrderSuccess(order) {
             ${loginPrompt}
             <p class="order-instruction" style="margin-top: 1.5rem;">Silakan lakukan pembayaran sesuai metode yang dipilih. Kami akan menghubungi Anda via WhatsApp untuk konfirmasi.</p>
             <div class="modal-buttons">
-                <a href="index" class="btn btn-primary">Kembali ke Beranda</a>
+                <a href="/" class="btn btn-primary">Kembali ke Beranda</a>
                 <a href="https://wa.me/${siteSettings.whatsapp}?text=Halo, saya sudah melakukan order dengan ID: ${order.orderId}" class="btn btn-success" target="_blank">
                     <i class="fab fa-whatsapp"></i> Konfirmasi via WhatsApp
                 </a>
@@ -973,17 +973,37 @@ function renderCategories() {
     const container = document.getElementById('categories-container');
     if (!container) return;
 
-    if (categoriesData.length === 0) {
-        container.innerHTML = '<p>Belum ada kategori.</p>';
+    console.log('Rendering categories:', categoriesData.length);
+
+    if (!categoriesData || categoriesData.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--gray-400);">Belum ada kategori.</p>';
         return;
     }
 
-    container.innerHTML = categoriesData.map(cat => `
-        <a href="products?category=${cat.id}" class="category-card">
-            <div class="category-icon"><i class="fas ${cat.icon}"></i></div>
-            <h3>${cat.title}</h3>
-            <p>${cat.description}</p>
-            <span class="category-count">${cat.count || ''}</span>
-        </a>
-    `).join('');
+    // Icon mapping for fallback
+    const iconMap = {
+        'ebook': 'fa-book',
+        'kelas': 'fa-graduation-cap',
+        'video': 'fa-video',
+        'template': 'fa-file-alt',
+        'software': 'fa-laptop-code',
+        'audio': 'fa-music'
+    };
+
+    container.innerHTML = categoriesData.map(cat => {
+        // Handle icon - could be "fa-book", "book", or emoji
+        let iconClass = cat.icon || iconMap[cat.id] || 'fa-folder';
+        if (iconClass && !iconClass.startsWith('fa-') && !iconClass.includes(' ')) {
+            iconClass = 'fa-' + iconClass;
+        }
+
+        return `
+            <a href="products?category=${cat.id}" class="category-card">
+                <div class="category-icon"><i class="fas ${iconClass}"></i></div>
+                <h3>${cat.title}</h3>
+                <p>${cat.description || ''}</p>
+                <span class="category-count">${cat.count || ''}</span>
+            </a>
+        `;
+    }).join('');
 }

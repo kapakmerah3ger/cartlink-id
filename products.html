@@ -19,10 +19,10 @@
     <!-- Navbar -->
     <nav class="navbar scrolled" id="navbar">
         <div class="container">
-            <a href="index" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+            <a href="/" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
                     class="logo-text">Cart<span class="highlight">Link</span></span></a>
             <div class="nav-menu" id="nav-menu">
-                <a href="index" class="nav-link">Beranda</a>
+                <a href="/" class="nav-link">Beranda</a>
                 <a href="products" class="nav-link active">Produk</a>
                 <a href="categories" class="nav-link">Kategori</a>
                 <a href="about" class="nav-link">Tentang</a>
@@ -44,7 +44,7 @@
     <!-- Page Header -->
     <section class="page-header">
         <div class="container">
-            <div class="breadcrumb"><a href="index">Beranda</a> <i class="fas fa-chevron-right"></i>
+            <div class="breadcrumb"><a href="/">Beranda</a> <i class="fas fa-chevron-right"></i>
                 <span>Produk</span>
             </div>
             <h1>Semua Produk</h1>
@@ -88,9 +88,8 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="index" class="logo"><span class="logo-icon"><i
-                                class="fas fa-shopping-cart"></i></span><span class="logo-text">Cart<span
-                                class="highlight">Link</span></span></a>
+                    <a href="/" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
+                            class="logo-text">Cart<span class="highlight">Link</span></span></a>
                     <p>Platform terbaik untuk produk digital berkualitas.</p>
                     <div class="social-links"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i
                                 class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a
@@ -116,7 +115,21 @@
     <script src="js/data.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', initProductFilters);</script>
+    <script>
+        // Wait for data to be ready before initializing filters
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if data is already loaded
+            if (window.productsData && window.productsData.length > 0) {
+                initProductFilters();
+            } else {
+                // Wait for dataReady event
+                document.addEventListener('dataReady', function () {
+                    console.log('Data ready, initializing product filters...');
+                    initProductFilters();
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
