@@ -3,7 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/produk/:slug",
+      "source": "/produk/:slug*",
       "destination": "/produk/index.html"
     },
     {
