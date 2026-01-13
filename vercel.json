@@ -1,26 +1,98 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/products", "destination": "/products.html" },
-    { "source": "/categories", "destination": "/categories.html" },
-    { "source": "/product-detail", "destination": "/product-detail.html" },
-    { "source": "/cart", "destination": "/cart.html" },
-    { "source": "/checkout", "destination": "/checkout.html" },
-    { "source": "/about", "destination": "/about.html" },
-    { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/help-center", "destination": "/help-center.html" },
-    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
-    { "source": "/admin/products", "destination": "/admin/products.html" },
-    { "source": "/admin/orders", "destination": "/admin/orders.html" },
-    { "source": "/admin/categories", "destination": "/admin/categories.html" },
-    { "source": "/admin/pages", "destination": "/admin/pages.html" },
-    { "source": "/admin/settings", "destination": "/admin/settings.html" },
-    { "source": "/admin/login", "destination": "/admin/login.html" },
-    { "source": "/customer/login", "destination": "/customer/login.html" },
-    { "source": "/customer/register", "destination": "/customer/register.html" },
-    { "source": "/customer/dashboard", "destination": "/customer/dashboard.html" },
-    { "source": "/customer/my-products", "destination": "/customer/my-products.html" },
-    { "source": "/customer/profile", "destination": "/customer/profile.html" }
+    {
+      "source": "/produk/:slug",
+      "destination": "/produk/index.html"
+    },
+    {
+      "source": "/products",
+      "destination": "/products.html"
+    },
+    {
+      "source": "/categories",
+      "destination": "/categories.html"
+    },
+    {
+      "source": "/product-detail",
+      "destination": "/product-detail.html"
+    },
+    {
+      "source": "/cart",
+      "destination": "/cart.html"
+    },
+    {
+      "source": "/checkout",
+      "destination": "/checkout.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/help-center",
+      "destination": "/help-center.html"
+    },
+    {
+      "source": "/admin/dashboard",
+      "destination": "/admin/dashboard.html"
+    },
+    {
+      "source": "/admin/products",
+      "destination": "/admin/products.html"
+    },
+    {
+      "source": "/admin/orders",
+      "destination": "/admin/orders.html"
+    },
+    {
+      "source": "/admin/categories",
+      "destination": "/admin/categories.html"
+    },
+    {
+      "source": "/admin/pages",
+      "destination": "/admin/pages.html"
+    },
+    {
+      "source": "/admin/settings",
+      "destination": "/admin/settings.html"
+    },
+    {
+      "source": "/admin/login",
+      "destination": "/admin/login.html"
+    },
+    {
+      "source": "/customer/login",
+      "destination": "/customer/login.html"
+    },
+    {
+      "source": "/customer/register",
+      "destination": "/customer/register.html"
+    },
+    {
+      "source": "/customer/dashboard",
+      "destination": "/customer/dashboard.html"
+    },
+    {
+      "source": "/customer/my-products",
+      "destination": "/customer/my-products.html"
+    },
+    {
+      "source": "/customer/profile",
+      "destination": "/customer/profile.html"
+    }
   ]
 }

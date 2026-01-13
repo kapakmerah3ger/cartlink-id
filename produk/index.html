@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pages.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -21,17 +21,18 @@
                     class="logo-text">Cart<span class="highlight">Link</span></span></a>
             <div class="nav-menu" id="nav-menu">
                 <a href="/" class="nav-link">Beranda</a>
-                <a href="products" class="nav-link active">Produk</a>
-                <a href="categories" class="nav-link">Kategori</a>
-                <a href="about" class="nav-link">Tentang</a>
-                <a href="contact" class="nav-link">Kontak</a>
+                <a href="/products" class="nav-link active">Produk</a>
+                <a href="/categories" class="nav-link">Kategori</a>
+                <a href="/about" class="nav-link">Tentang</a>
+                <a href="/contact" class="nav-link">Kontak</a>
             </div>
             <div class="nav-actions">
-                <a href="cart" class="cart-link" title="Keranjang Belanja">
+                <a href="/cart" class="cart-link" title="Keranjang Belanja">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-counter">0</span>
                 </a>
-                <button class="btn btn-outline btn-sm" onclick="location.href='admin/login'"><i class="fas fa-user"></i>
+                <button class="btn btn-outline btn-sm" onclick="location.href='/admin/login'"><i
+                        class="fas fa-user"></i>
                     Admin</button>
                 <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
             </div>
@@ -41,7 +42,8 @@
     <section class="page-header">
         <div class="container">
             <div class="breadcrumb"><a href="/">Beranda</a> <i class="fas fa-chevron-right"></i> <a
-                    href="products">Produk</a> <i class="fas fa-chevron-right"></i> <span>Detail</span></div>
+                    href="/products">Produk</a> <i class="fas fa-chevron-right"></i> <span
+                    id="breadcrumb-title">Detail</span></div>
         </div>
     </section>
 
@@ -71,10 +73,10 @@
                 <div class="footer-links">
                     <h4>Bantuan</h4>
                     <ul>
-                        <li><a href="help-center">Pusat Bantuan</a></li>
-                        <li><a href="terms">Syarat & Ketentuan</a></li>
-                        <li><a href="privacy">Kebijakan Privasi</a></li>
-                        <li><a href="contact">Kontak Kami</a></li>
+                        <li><a href="/help-center">Pusat Bantuan</a></li>
+                        <li><a href="/terms">Syarat & Ketentuan</a></li>
+                        <li><a href="/privacy">Kebijakan Privasi</a></li>
+                        <li><a href="/contact">Kontak Kami</a></li>
                     </ul>
                 </div>
             </div>
@@ -84,11 +86,16 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/main.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', function () { initProductDetail(); updateDetailWishlist(); });</script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initProductDetailBySlug();
+            updateDetailWishlist();
+        });
+    </script>
 </body>
 
 </html>

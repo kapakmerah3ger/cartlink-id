@@ -345,8 +345,9 @@ function initCheckout() {
 
         // Add note about account
         const form = document.querySelector('.checkout-form');
-        if (form) {
+        if (form && !form.querySelector('.account-note')) {
             const note = document.createElement('p');
+            note.className = 'account-note';
             note.style.fontSize = '0.85rem';
             note.style.color = '#818cf8';
             note.style.marginBottom = '1.5rem';
@@ -372,8 +373,36 @@ function initCheckout() {
             return;
         }
 
+        // IMPORTANT: Check if data is ready before looking for product
+        if (!productsData || productsData.length === 0) {
+            console.log('Checkout: Products data not ready, waiting for dataReady event...');
+            // Show loading state
+            const container = document.getElementById('checkout-product');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
+                        <p style="margin-top: 1rem; color: var(--gray-400);">Memuat data produk...</p>
+                    </div>
+                `;
+            }
+            // Wait for data and retry
+            document.addEventListener('dataReady', function onDataReady() {
+                document.removeEventListener('dataReady', onDataReady);
+                initCheckout(); // Retry after data is ready
+            });
+            // Also add a timeout fallback in case dataReady already fired
+            setTimeout(() => {
+                if (productsData && productsData.length > 0) {
+                    initCheckout();
+                }
+            }, 500);
+            return;
+        }
+
         const product = getProductById(productId);
         if (!product) {
+            console.error('Checkout: Product not found with ID:', productId);
             window.location.href = 'products';
             return;
         }
@@ -655,22 +684,37 @@ function showOrderSuccess(order) {
 function initProductDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
+    const productSlug = urlParams.get('slug');
 
-    if (!productId) {
+    // If no ID or slug in query params, check if we're on slug-based URL
+    if (!productId && !productSlug) {
+        // Try to get slug from path (e.g., /produk/nama-produk)
+        const pathParts = window.location.pathname.split('/').filter(p => p);
+        if (pathParts.length >= 2 && pathParts[0] === 'produk') {
+            const slug = pathParts[1];
+            initProductDetailBySlug(slug);
+            return;
+        }
         displayProductNotFound();
         return;
     }
 
-    // Ensure data is ready. If called before data load, retry shortly (though DOMContentLoaded usually handles this)
+    // Ensure data is ready
     if (!productsData || productsData.length === 0) {
         console.warn('Products data not ready, retrying...');
         setTimeout(initProductDetail, 100);
         return;
     }
 
-    const product = getProductById(productId);
+    let product = null;
+    if (productSlug) {
+        product = getProductBySlug ? getProductBySlug(productSlug) : null;
+    } else if (productId) {
+        product = getProductById(productId);
+    }
+
     if (!product) {
-        console.error('Product not found:', productId);
+        console.error('Product not found:', productId || productSlug);
         displayProductNotFound();
         return;
     }
@@ -678,6 +722,45 @@ function initProductDetail() {
     displayProductDetail(product);
     loadRelatedProducts(product.category, product.id);
 }
+
+// Initialize product detail by slug (for /produk/slug URLs)
+function initProductDetailBySlug(slugFromPath) {
+    // Get slug from path if not provided
+    const slug = slugFromPath || window.location.pathname.split('/').filter(p => p).pop();
+
+    if (!slug || slug === 'produk') {
+        displayProductNotFound();
+        return;
+    }
+
+    // Ensure data is ready
+    if (!productsData || productsData.length === 0) {
+        console.warn('Products data not ready for slug lookup, retrying...');
+        setTimeout(() => initProductDetailBySlug(slug), 100);
+        return;
+    }
+
+    // Find product by slug
+    const product = typeof getProductBySlug === 'function'
+        ? getProductBySlug(slug)
+        : productsData.find(p => p.slug === slug);
+
+    if (!product) {
+        console.error('Product not found by slug:', slug);
+        displayProductNotFound();
+        return;
+    }
+
+    // Update breadcrumb
+    const breadcrumbTitle = document.getElementById('breadcrumb-title');
+    if (breadcrumbTitle) {
+        breadcrumbTitle.textContent = product.title;
+    }
+
+    displayProductDetail(product);
+    loadRelatedProducts(product.category, product.id);
+}
+
 
 function displayProductNotFound() {
     const container = document.getElementById('product-detail');
@@ -784,13 +867,20 @@ function displayProductDetail(product) {
     // Update page title
     document.title = `${product.title} - CartLink.id`;
 
-    // Store product price for quantity calculations
+    // Store product info for quantity calculations and wishlist functionality
+    window.currentProductId = product.id;
     window.currentProductPrice = product.price;
+    window.currentProduct = product;
+
     updateDetailWishlist();
 }
 
 function updateDetailWishlist() {
-    const productId = new URLSearchParams(window.location.search).get('id');
+    // Get product ID from window object (set by displayProductDetail) or from URL params
+    let productId = window.currentProductId;
+    if (!productId) {
+        productId = parseInt(new URLSearchParams(window.location.search).get('id'));
+    }
     if (!productId) return;
 
     const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -803,15 +893,16 @@ function updateDetailWishlist() {
     if (wishlist.includes(parseInt(productId))) {
         icon.classList.remove('far');
         icon.classList.add('fas');
-        text.textContent = 'Di Wishlist';
+        if (text) text.textContent = 'Di Wishlist';
         btn.classList.add('active');
     } else {
         icon.classList.remove('fas');
         icon.classList.add('far');
-        text.textContent = 'Wishlist';
+        if (text) text.textContent = 'Wishlist';
         btn.classList.remove('active');
     }
 }
+
 
 function generateStars(rating) {
     let stars = '';
@@ -843,25 +934,6 @@ function loadRelatedProducts(category, excludeId) {
     updateWishlistUI();
 }
 
-function updateDetailWishlist() {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id'));
-
-    const btn = document.querySelector('.detail-actions .btn-outline');
-    if (btn) {
-        const icon = btn.querySelector('i');
-        if (wishlist.includes(productId)) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            btn.innerHTML = '<i class="fas fa-heart"></i> Di Wishlist';
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            btn.innerHTML = '<i class="far fa-heart"></i> Wishlist';
-        }
-    }
-}
 
 // ==================== Contact Form ====================
 function initContactForm() {
@@ -963,12 +1035,23 @@ function buyNow(productId) {
     const qtyInput = document.getElementById('product-quantity');
     const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
 
-    // Check if we are in a subdirectory
-    const isInsideFolder = window.location.pathname.includes('/admin/') || window.location.pathname.includes('/customer/') || window.location.pathname.includes('/pages/');
-    const prefix = isInsideFolder ? '../' : '';
+    // Determine the correct path prefix based on current location
+    const pathname = window.location.pathname;
+    let checkoutUrl = '';
 
-    window.location.href = `${prefix}checkout?id=${productId}&qty=${quantity}`;
+    if (pathname.includes('/admin/') || pathname.includes('/customer/') || pathname.includes('/pages/')) {
+        checkoutUrl = '../checkout';
+    } else if (pathname.includes('/produk/')) {
+        // We're inside /produk/ folder
+        checkoutUrl = '../checkout';
+    } else {
+        checkoutUrl = 'checkout';
+    }
+
+    // Navigate to checkout with product ID and quantity
+    window.location.href = `${checkoutUrl}?id=${productId}&qty=${quantity}`;
 }
+
 function renderCategories() {
     const container = document.getElementById('categories-container');
     if (!container) return;

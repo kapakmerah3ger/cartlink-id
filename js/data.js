@@ -27,6 +27,19 @@ const defaultCategories = [
 window.categoriesData = window.categoriesData || defaultCategories;
 let categoriesData = window.categoriesData;
 
+// ==================== Helper: Slugify ====================
+function slugify(text) {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')           // Replace spaces with -
+        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+        .replace(/^-+/, '')             // Trim - from start
+        .replace(/-+$/, '');            // Trim - from end
+}
+
 // ==================== Data Fetching Functions ====================
 async function fetchProducts() {
     if (!supabaseClient) {
@@ -44,10 +57,12 @@ async function fetchProducts() {
 
         console.log('Products fetched:', data?.length || 0);
         // Map snake_case database columns to camelCase for frontend
+        // Also generate slug from title for SEO-friendly URLs
         return (data || []).map(p => ({
             ...p,
             categoryLabel: p.category_label,
             originalPrice: p.original_price,
+            slug: p.slug || slugify(p.title) // Use existing slug or generate from title
         }));
     } catch (err) {
         console.error('Error fetching products:', err);
@@ -221,6 +236,11 @@ function getProductById(id) {
     return productsData.find(p => p.id === parseInt(id));
 }
 
+// Get product by slug
+function getProductBySlug(slug) {
+    return productsData.find(p => p.slug === slug);
+}
+
 function isInCart(productId) {
     const cart = getCart();
     return cart.some(item => item.id === parseInt(productId));
@@ -232,8 +252,11 @@ function renderProductCard(product) {
         ? `<span class="product-badge">${product.badge}</span>`
         : '';
 
+    // Use slug for SEO-friendly URLs
+    const productUrl = `produk/${product.slug || slugify(product.title)}`;
+
     return `
-        <div class="product-card" data-id="${product.id}" onclick="window.location.href='product-detail?id=${product.id}'" style="cursor: pointer;">
+        <div class="product-card" data-id="${product.id}" data-slug="${product.slug}" onclick="window.location.href='${productUrl}'" style="cursor: pointer;">
             <div class="product-image">
                 <img src="${product.image}" alt="${product.title}" onerror="this.src='https://via.placeholder.com/400x300?text=Image'">
                 ${badgeHtml}
@@ -244,7 +267,7 @@ function renderProductCard(product) {
             <div class="product-content">
                 <span class="product-category">${product.categoryLabel}</span>
                 <h3 class="product-title">
-                    <a href="product-detail?id=${product.id}" onclick="event.stopPropagation()">${product.title}</a>
+                    <a href="${productUrl}" onclick="event.stopPropagation()">${product.title}</a>
                 </h3>
                 <div class="product-rating">
                     <i class="fas fa-star"></i>
