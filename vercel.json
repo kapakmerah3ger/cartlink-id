@@ -1,12 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "routes": [
-    {
-      "src": "/produk/([^/]+)$",
-      "dest": "/produk/index.html"
-    }
-  ],
   "rewrites": [
     {
       "source": "/products",

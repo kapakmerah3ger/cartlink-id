@@ -252,8 +252,9 @@ function renderProductCard(product) {
         ? `<span class="product-badge">${product.badge}</span>`
         : '';
 
-    // Use slug for SEO-friendly URLs
-    const productUrl = `produk/${product.slug || slugify(product.title)}`;
+    // Use query param for product detail (works on static hosting)
+    const productSlug = product.slug || slugify(product.title);
+    const productUrl = `product-detail?slug=${productSlug}`;
 
     return `
         <div class="product-card" data-id="${product.id}" data-slug="${product.slug}" onclick="window.location.href='${productUrl}'" style="cursor: pointer;">
