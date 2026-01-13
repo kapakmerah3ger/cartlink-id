@@ -1,11 +1,13 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/produk/:slug*",
-      "destination": "/produk/index.html"
-    },
+      "src": "/produk/([^/]+)$",
+      "dest": "/produk/index.html"
+    }
+  ],
+  "rewrites": [
     {
       "source": "/products",
       "destination": "/products.html"
@@ -93,6 +95,10 @@
     {
       "source": "/customer/profile",
       "destination": "/customer/profile.html"
+    },
+    {
+      "source": "/customer/orders",
+      "destination": "/customer/orders.html"
     }
   ]
 }
