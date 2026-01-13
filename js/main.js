@@ -445,39 +445,90 @@ function initCartCheckoutForm(cart) {
     const form = document.getElementById('checkout-form');
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const formData = new FormData(form);
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        // Validate form
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const phone = formData.get('phone');
+
+        if (!name || !email || !phone) {
+            showNotification('Mohon lengkapi semua data yang wajib diisi', 'error');
+            return;
+        }
 
         const orderData = {
             orderId: generateOrderId(),
             items: cart,
             totalPrice: total,
             customer: {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                whatsapp: formData.get('whatsapp') || formData.get('phone')
+                name: name,
+                email: email,
+                phone: phone,
+                whatsapp: formData.get('whatsapp') || phone
             },
-            paymentMethod: formData.get('payment'),
             notes: formData.get('notes'),
             status: 'pending',
             createdAt: new Date().toISOString()
         };
 
-        saveOrder(orderData);
-
-        // Grant access if logged in
-        if (typeof addPurchasedProduct === 'function') {
-            orderData.items.forEach(item => {
-                addPurchasedProduct(item.id);
-            });
+        // Disable submit button
+        const submitBtn = document.getElementById('pay-button');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
         }
 
-        clearCart(); // Clear cart after successful order
-        showOrderSuccess(orderData);
+        // Process payment with Midtrans Snap
+        if (typeof processPaymentWithMidtrans === 'function') {
+            await processPaymentWithMidtrans(
+                orderData,
+                // On Success
+                (result) => {
+                    orderData.status = 'paid';
+                    orderData.paymentMethod = 'midtrans';
+                    orderData.transactionId = result.transaction_id;
+                    saveOrder(orderData);
+
+                    // Grant access if logged in
+                    if (typeof addPurchasedProduct === 'function') {
+                        orderData.items.forEach(item => {
+                            addPurchasedProduct(item.id);
+                        });
+                    }
+
+                    clearCart();
+                    showOrderSuccess(orderData);
+                },
+                // On Pending
+                (result) => {
+                    orderData.status = 'pending';
+                    orderData.paymentMethod = 'midtrans';
+                    orderData.transactionId = result.transaction_id;
+                    saveOrder(orderData);
+                    showOrderSuccess(orderData);
+                },
+                // On Error
+                (result) => {
+                    // Re-enable button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-lock"></i> Bayar Sekarang';
+                    }
+                }
+            );
+        } else {
+            // Fallback if Midtrans not loaded
+            showNotification('Payment gateway tidak tersedia. Silakan refresh halaman.', 'error');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-lock"></i> Bayar Sekarang';
+            }
+        }
     });
 }
 
@@ -539,41 +590,93 @@ function initCheckoutForm(product, quantity = 1) {
     const form = document.getElementById('checkout-form');
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const currentQty = parseInt(document.getElementById('checkout-quantity')?.value) || quantity;
         const totalPrice = product.price * currentQty;
 
         const formData = new FormData(form);
+
+        // Validate form
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const phone = formData.get('phone');
+
+        if (!name || !email || !phone) {
+            showNotification('Mohon lengkapi semua data yang wajib diisi', 'error');
+            return;
+        }
+
         const orderData = {
             orderId: generateOrderId(),
             productId: product.id,
             productTitle: product.title,
             quantity: currentQty,
             pricePerUnit: product.price,
-            productPrice: totalPrice, // For backward compatibility with simpler table
+            productPrice: totalPrice,
             totalPrice: totalPrice,
             customer: {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                whatsapp: formData.get('whatsapp') || formData.get('phone')
+                name: name,
+                email: email,
+                phone: phone,
+                whatsapp: formData.get('whatsapp') || phone
             },
-            paymentMethod: formData.get('payment'),
             notes: formData.get('notes'),
             status: 'pending',
             createdAt: new Date().toISOString()
         };
 
-        saveOrder(orderData);
-
-        // Grant access if logged in
-        if (typeof addPurchasedProduct === 'function') {
-            addPurchasedProduct(product.id);
+        // Disable submit button
+        const submitBtn = document.getElementById('pay-button');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
         }
 
-        showOrderSuccess(orderData);
+        // Process payment with Midtrans Snap
+        if (typeof processPaymentWithMidtrans === 'function') {
+            await processPaymentWithMidtrans(
+                orderData,
+                // On Success
+                (result) => {
+                    orderData.status = 'paid';
+                    orderData.paymentMethod = 'midtrans';
+                    orderData.transactionId = result.transaction_id;
+                    saveOrder(orderData);
+
+                    // Grant access if logged in
+                    if (typeof addPurchasedProduct === 'function') {
+                        addPurchasedProduct(product.id);
+                    }
+
+                    showOrderSuccess(orderData);
+                },
+                // On Pending
+                (result) => {
+                    orderData.status = 'pending';
+                    orderData.paymentMethod = 'midtrans';
+                    orderData.transactionId = result.transaction_id;
+                    saveOrder(orderData);
+                    showOrderSuccess(orderData);
+                },
+                // On Error
+                (result) => {
+                    // Re-enable button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-lock"></i> Bayar Sekarang';
+                    }
+                }
+            );
+        } else {
+            // Fallback if Midtrans not loaded
+            showNotification('Payment gateway tidak tersedia. Silakan refresh halaman.', 'error');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-lock"></i> Bayar Sekarang';
+            }
+        }
     });
 }
 
