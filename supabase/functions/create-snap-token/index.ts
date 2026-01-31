@@ -104,6 +104,25 @@ serve(async (req) => {
             });
         }
 
+        // Map frontend payment method to Midtrans enabled_payments
+        // Note: QRIS/GoPay sedang dalam proses aktivasi, gunakan fallback ke all VA jika dipilih
+        const paymentMethodMap: { [key: string]: string[] } = {
+            'qris': ['qris', 'gopay'],  // Will fallback if not activated yet
+            'bri_va': ['bri_va'],
+            'bca_va': ['bca_va'],
+            'bni_va': ['bni_va'],
+            'echannel': ['echannel'],  // Mandiri Bill
+            'bank_transfer': ['bca_va', 'bni_va', 'bri_va', 'permata_va', 'other_va', 'echannel'],
+        };
+
+        // Get enabled payments based on selected method, or all if not specified
+        const selectedMethod = orderData.paymentMethod || 'bank_transfer';
+        const enabledPayments = paymentMethodMap[selectedMethod] || [
+            'bca_va', 'bni_va', 'bri_va', 'permata_va', 'other_va', 'echannel'
+        ];
+
+        console.log('Selected payment method:', selectedMethod, '-> enabled_payments:', enabledPayments);
+
         // Build Midtrans transaction payload
         const transactionPayload = {
             transaction_details: {
@@ -116,12 +135,8 @@ serve(async (req) => {
                 email: orderData.customer.email,
                 phone: orderData.customer.phone
             },
-            // Enable specific payment methods
-            enabled_payments: [
-                "bca_va", "bni_va", "bri_va", "permata_va", "other_va", // Bank Transfer
-                "gopay", "shopeepay", // E-wallet
-                "qris" // QRIS
-            ],
+            // Enable only selected payment method(s)
+            enabled_payments: enabledPayments,
             callbacks: {
                 finish: `${req.headers.get('origin') || 'https://cartlink.id'}/checkout-success?order_id=${orderData.orderId}`
             }

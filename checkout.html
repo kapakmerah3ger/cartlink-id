@@ -470,17 +470,18 @@
         <div class="checkout-card">
             <div class="card-title"><i class="fas fa-credit-card"></i> Metode Pembayaran</div>
             <div class="payment-methods" id="payment-methods">
-                <label class="payment-option selected" data-method="qris" data-fee="0.7%" data-fee-type="percent">
-                    <input type="radio" name="payment" value="qris" checked>
+                <label class="payment-option disabled" data-method="qris" data-fee="0.7%" data-fee-type="percent"
+                    style="opacity: 0.6; pointer-events: none;">
+                    <input type="radio" name="payment" value="qris" disabled>
                     <span class="payment-radio"></span>
                     <span class="payment-icon qris">QRIS</span>
                     <span class="payment-info">
-                        <span class="payment-name">QRIS</span>
+                        <span class="payment-name">QRIS <small style="color:#f97316;">(Coming Soon)</small></span>
                         <span class="payment-fee">Admin fee 0.7%</span>
                     </span>
                 </label>
-                <label class="payment-option" data-method="bri_va" data-fee="4000" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="bri_va">
+                <label class="payment-option selected" data-method="bri_va" data-fee="4000" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="bri_va" checked>
                     <span class="payment-radio"></span>
                     <span class="payment-icon bri">BRI</span>
                     <span class="payment-info">
@@ -576,7 +577,7 @@
     <script>
         // State
         let productData = null;
-        let selectedPayment = 'qris';
+        let selectedPayment = 'bri_va';
         let adminFee = 0;
 
         function initCheckoutPage() {
