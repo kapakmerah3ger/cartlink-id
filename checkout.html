@@ -571,9 +571,20 @@
         function renderOrderSummary() {
             if (!productData) return;
 
+            // Render Product List
+            const container = document.getElementById('product-details');
+            if (container) {
+                let html = productData.items.map(item => `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem;">
+                        <span style="color: var(--text-color);">${item.name || item.title} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                        <span style="font-weight: 500;">${formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                `).join('');
+                container.innerHTML = html;
+            }
+
+            // Render Prices
             document.getElementById('product-price').textContent = formatPrice(productData.subtotal);
-            // Admin fee removed from display
-            // document.getElementById('admin-fee').textContent = formatPrice(adminFee);
 
             // Total is just product price
             const total = productData.subtotal;
