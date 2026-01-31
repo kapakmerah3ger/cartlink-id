@@ -29,7 +29,7 @@ function formatPrice(price) {
 
 function checkAuth() {
     if (localStorage.getItem('adminLoggedIn') !== 'true') {
-        window.location.href = 'login.html';
+        window.location.href = '/admin/login';
         return false;
     }
 
@@ -45,7 +45,7 @@ function logout() {
     if (confirm('Apakah Anda yakin ingin keluar?')) {
         localStorage.removeItem('adminLoggedIn');
         localStorage.removeItem('adminUser');
-        window.location.href = 'login.html';
+        window.location.href = '/admin/login';
     }
 }
 
