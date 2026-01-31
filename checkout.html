@@ -574,9 +574,6 @@
     <script src="js/data.js"></script>
     <script src="js/midtrans-config.js"></script>
     <script>
-        // Initialize Supabase client - use the same pattern as data.js
-        const supabase = (typeof getSupabase === 'function') ? getSupabase() : window._supabaseClient;
-
         // State
         let productData = null;
         let selectedPayment = 'qris';
@@ -608,7 +605,8 @@
         async function loadProductCheckout(productId, qty = 1) {
             try {
                 console.log('Loading product ID:', productId);
-                const { data: product, error } = await supabase
+                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
+                const { data: product, error } = await sb
                     .from('products')
                     .select('*')
                     .eq('id', productId)
@@ -649,7 +647,8 @@
         async function loadProductBySlug(slug, qty = 1) {
             try {
                 console.log('Loading product by slug:', slug);
-                const { data: product, error } = await supabase
+                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
+                const { data: product, error } = await sb
                     .from('products')
                     .select('*')
                     .eq('slug', slug)
@@ -766,6 +765,7 @@
         // Save order to Supabase database
         async function saveOrderToDatabase(orderData) {
             try {
+                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
                 const orderRecord = {
                     id: orderData.orderId,
                     customer_info: orderData.customer,
@@ -776,7 +776,7 @@
                     created_at: new Date().toISOString()
                 };
 
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('orders')
                     .insert([orderRecord]);
 
@@ -860,7 +860,8 @@
                             orderData,
                             async function (result) {
                                 // Update order status to paid
-                                await supabase
+                                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
+                                await sb
                                     .from('orders')
                                     .update({ status: 'paid' })
                                     .eq('id', orderData.orderId);
@@ -918,20 +919,35 @@
             };
         }
 
-        // Run initialization - handle if document is already loaded
-        (function runCheckoutInit() {
-            console.log('Running checkout init...');
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function () {
+        // Run initialization - wait for Supabase to be ready
+        (function () {
+            function waitForSupabase(callback) {
+                // Check if supabase client is available
+                const client = (typeof getSupabase === 'function') ? getSupabase() : window._supabaseClient;
+                if (client && typeof client.from === 'function') {
+                    console.log('Supabase ready, initializing checkout...');
+                    callback(client);
+                } else {
+                    console.log('Waiting for Supabase client...');
+                    // Try again in 100ms
+                    setTimeout(function () { waitForSupabase(callback); }, 100);
+                }
+            }
+
+            function runInit() {
+                waitForSupabase(function (client) {
+                    // Store client globally for use by other functions
+                    window.checkoutSupabase = client;
                     initCheckoutPage();
                     initPaymentSelection();
                     initFormSubmit();
                 });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', runInit);
             } else {
-                // Document already loaded, run immediately
-                initCheckoutPage();
-                initPaymentSelection();
-                initFormSubmit();
+                runInit();
             }
         })();
     </script>
