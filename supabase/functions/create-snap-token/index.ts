@@ -105,20 +105,20 @@ serve(async (req) => {
         }
 
         // Map frontend payment method to Midtrans enabled_payments
-        // Note: QRIS/GoPay sedang dalam proses aktivasi, gunakan fallback ke all VA jika dipilih
+        // Note: Include fallbacks as some channels may not be active in Sandbox
         const paymentMethodMap: { [key: string]: string[] } = {
-            'qris': ['qris', 'gopay'],  // Will fallback if not activated yet
-            'bri_va': ['bri_va'],
+            'qris': ['qris', 'gopay', 'shopeepay'],  // QRIS pending, fallback to e-wallets
+            'bri_va': ['bri_va', 'bca_va', 'bni_va', 'permata_va'],  // BRI with fallbacks
             'bca_va': ['bca_va'],
-            'bni_va': ['bni_va'],
-            'echannel': ['echannel'],  // Mandiri Bill
-            'bank_transfer': ['bca_va', 'bni_va', 'bri_va', 'permata_va', 'other_va', 'echannel'],
+            'bni_va': ['bni_va', 'bca_va', 'bri_va'],  // BNI with fallbacks
+            'echannel': ['echannel', 'bca_va', 'bni_va'],  // Mandiri Bill with fallbacks
+            'bank_transfer': ['bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
         };
 
         // Get enabled payments based on selected method, or all if not specified
         const selectedMethod = orderData.paymentMethod || 'bank_transfer';
         const enabledPayments = paymentMethodMap[selectedMethod] || [
-            'bca_va', 'bni_va', 'bri_va', 'permata_va', 'other_va', 'echannel'
+            'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'
         ];
 
         console.log('Selected payment method:', selectedMethod, '-> enabled_payments:', enabledPayments);
