@@ -13,8 +13,9 @@ const MIDTRANS_TOKEN_URL = `${SUPABASE_URL}/functions/v1/create-snap-token`;
 
 // Fallback showNotification function if not defined elsewhere
 // This ensures compatibility with pages that don't include main.js
-if (typeof window.showNotification === 'undefined') {
-    window.showNotification = function (message, type = 'info') {
+if (typeof showNotification === 'undefined') {
+    // Define the function as a global variable to avoid conflicts
+    var showNotification = function (message, type = 'info') {
         // Try to use existing toast system if available
         const toast = document.getElementById('toast');
         if (toast) {
@@ -28,13 +29,6 @@ if (typeof window.showNotification === 'undefined') {
             console.log(`[${type.toUpperCase()}] ${message}`);
         }
     };
-}
-
-// Make sure showNotification is globally accessible
-function showNotification(message, type = 'info') {
-    if (window.showNotification) {
-        window.showNotification(message, type);
-    }
 }
 
 // Initialize Midtrans Snap
