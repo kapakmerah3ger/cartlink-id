@@ -561,23 +561,27 @@ async function loadAdminOrders() {
             const status = order.status;
             const paymentMethod = order.payment_method;
 
-            const productDisplay = items.length
+            const productDisplay = items.length > 1
                 ? `${items.length} Produk`
                 : (items[0]?.title || '-');
 
-            const totalQty = items.reduce((sum, item) => sum + item.quantity, 0);
+            // Format WhatsApp number for link
+            const waNumber = (customer.phone || '').replace(/\D/g, '');
+            const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
 
             return `
                 <tr>
-                    <td><strong>${orderId}</strong></td>
+                    <td><strong>${orderId.length > 15 ? orderId.substring(0, 15) + '...' : orderId}</strong></td>
                     <td>
                         <div>
                             <strong>${customer.name || '-'}</strong><br>
                             <small style="color:var(--gray-500)">${customer.email || ''}</small>
                         </div>
                     </td>
+                    <td>
+                        ${customer.phone ? `<a href="${waLink}" target="_blank" style="color:#25d366;text-decoration:none;"><i class="fab fa-whatsapp"></i> ${customer.phone}</a>` : '-'}
+                    </td>
                     <td>${productDisplay}</td>
-                    <td>${totalQty}x</td>
                     <td>${formatPrice(total)}</td>
                     <td>${(paymentMethod || '').toUpperCase()}</td>
                     <td><span class="status-badge ${status}">${getStatusLabel(status)}</span></td>

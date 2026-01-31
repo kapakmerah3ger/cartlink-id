@@ -87,8 +87,8 @@
                             <tr>
                                 <th>ID Pesanan</th>
                                 <th>Pelanggan</th>
+                                <th>WhatsApp</th>
                                 <th>Produk</th>
-                                <th>Qty</th>
                                 <th>Total</th>
                                 <th>Pembayaran</th>
                                 <th>Status</th>
@@ -105,16 +105,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
     <script src="../js/data.js"></script>
-    <script src="admin.js?v=10"></script>
+    <script src="admin.js?v=11"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
             checkAuth();
             loadAdminOrders();
 
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            document.getElementById('pending-count').textContent = orders.filter(o => o.status === 'pending').length;
-            document.getElementById('paid-count').textContent = orders.filter(o => o.status === 'paid').length;
-            document.getElementById('completed-count').textContent = orders.filter(o => o.status === 'completed').length;
+            // Load order stats from Supabase
+            try {
+                const { data: orders, error } = await supabase
+                    .from('orders')
+                    .select('*');
+
+                if (!error && orders) {
+                    document.getElementById('pending-count').textContent = orders.filter(o => o.status === 'pending').length;
+                    document.getElementById('paid-count').textContent = orders.filter(o => o.status === 'paid').length;
+                    document.getElementById('completed-count').textContent = orders.filter(o => o.status === 'completed').length;
+                }
+            } catch (err) {
+                console.error('Error loading order stats:', err);
+            }
         });
     </script>
 </body>

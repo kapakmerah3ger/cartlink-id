@@ -579,7 +579,7 @@
         let selectedPayment = 'qris';
         let adminFee = 0;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initCheckoutPage();
             initPaymentSelection();
             initFormSubmit();
@@ -589,26 +589,73 @@
             // Get product from URL or localStorage
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
+            const productSlug = urlParams.get('slug');
+            const qty = parseInt(urlParams.get('qty')) || 1;
             const fromCart = urlParams.get('from') === 'cart';
 
             if (fromCart) {
                 // Load from cart
                 loadCartCheckout();
+            } else if (productSlug) {
+                // Load by slug
+                loadProductBySlug(productSlug, qty);
             } else if (productId) {
-                // Load single product
-                loadProductCheckout(productId);
+                // Load single product by ID
+                loadProductCheckout(parseInt(productId), qty);
             } else {
                 // Fallback to cart
                 loadCartCheckout();
             }
         }
 
-        async function loadProductCheckout(productId) {
+        async function loadProductCheckout(productId, qty = 1) {
             try {
+                console.log('Loading product ID:', productId);
                 const { data: product, error } = await supabase
                     .from('products')
                     .select('*')
                     .eq('id', productId)
+                    .single();
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    showToast('Produk tidak ditemukan', 'error');
+                    return;
+                }
+
+                if (!product) {
+                    showToast('Produk tidak ditemukan', 'error');
+                    return;
+                }
+
+                console.log('Product loaded:', product);
+
+                productData = {
+                    items: [{
+                        id: product.id,
+                        title: product.title || product.name,
+                        price: product.price,
+                        quantity: qty,
+                        slug: product.slug
+                    }],
+                    subtotal: product.price * qty
+                };
+
+                renderProductSummary();
+                updatePrices();
+            } catch (err) {
+                console.error('Error loading product:', err);
+                showToast('Gagal memuat produk', 'error');
+            }
+        }
+
+        async function loadProductBySlug(slug, qty = 1) {
+            try {
+                console.log('Loading product by slug:', slug);
+                const { data: product, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('slug', slug)
                     .single();
 
                 if (error || !product) {
@@ -619,23 +666,24 @@
                 productData = {
                     items: [{
                         id: product.id,
-                        title: product.name || product.title,
+                        title: product.title || product.name,
                         price: product.price,
-                        quantity: 1
+                        quantity: qty,
+                        slug: product.slug
                     }],
-                    subtotal: product.price
+                    subtotal: product.price * qty
                 };
 
                 renderProductSummary();
                 updatePrices();
             } catch (err) {
-                console.error(err);
+                console.error('Error loading product:', err);
                 showToast('Gagal memuat produk', 'error');
             }
         }
 
         function loadCartCheckout() {
-            const cart = getCart ? getCart() : JSON.parse(localStorage.getItem('cart') || '[]');
+            const cart = typeof getCart === 'function' ? getCart() : JSON.parse(localStorage.getItem('cart') || '[]');
 
             if (!cart || cart.length === 0) {
                 document.getElementById('product-details').innerHTML = `
@@ -666,7 +714,7 @@
             if (!productData) return;
 
             const container = document.getElementById('product-details');
-            
+
             let html = productData.items.map(item => `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                     <span>${item.title} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
@@ -681,7 +729,7 @@
             const paymentOptions = document.querySelectorAll('.payment-option');
 
             paymentOptions.forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', function () {
                     // Remove selected from all
                     paymentOptions.forEach(opt => opt.classList.remove('selected'));
                     // Add selected to clicked
@@ -718,10 +766,40 @@
             document.getElementById('total-price').textContent = formatPrice(total);
         }
 
+        // Save order to Supabase database
+        async function saveOrderToDatabase(orderData) {
+            try {
+                const orderRecord = {
+                    id: orderData.orderId,
+                    customer_info: orderData.customer,
+                    items: orderData.items,
+                    total: orderData.totalPrice,
+                    payment_method: orderData.paymentMethod,
+                    status: 'pending',
+                    created_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabase
+                    .from('orders')
+                    .insert([orderRecord]);
+
+                if (error) {
+                    console.error('Error saving order:', error);
+                    return false;
+                }
+
+                console.log('Order saved successfully:', orderData.orderId);
+                return true;
+            } catch (err) {
+                console.error('Failed to save order:', err);
+                return false;
+            }
+        }
+
         function initFormSubmit() {
             const btnCheckout = document.getElementById('btn-checkout');
-            
-            btnCheckout.addEventListener('click', async function() {
+
+            btnCheckout.addEventListener('click', async function () {
                 const name = document.getElementById('name').value.trim();
                 const phone = document.getElementById('phone').value.trim();
                 const email = document.getElementById('email').value.trim();
@@ -766,17 +844,30 @@
                         customer: {
                             name: name,
                             email: email,
-                            phone: phone
+                            phone: phone,
+                            notes: notes
                         },
                         notes: notes,
                         paymentMethod: selectedPayment
                     };
 
+                    // Save order to database FIRST
+                    const saved = await saveOrderToDatabase(orderData);
+                    if (!saved) {
+                        console.warn('Order not saved to database, continuing with payment...');
+                    }
+
                     // Process with Midtrans
                     if (typeof processPaymentWithMidtrans === 'function') {
                         await processPaymentWithMidtrans(
                             orderData,
-                            function(result) {
+                            async function (result) {
+                                // Update order status to paid
+                                await supabase
+                                    .from('orders')
+                                    .update({ status: 'paid' })
+                                    .eq('id', orderData.orderId);
+
                                 showToast('Pembayaran berhasil!', 'success');
                                 // Clear cart
                                 if (typeof clearCart === 'function') clearCart();
@@ -785,10 +876,10 @@
                                     window.location.href = '/';
                                 }, 2000);
                             },
-                            function(result) {
+                            function (result) {
                                 showToast('Silakan selesaikan pembayaran Anda', 'info');
                             },
-                            function(result) {
+                            function (result) {
                                 showToast('Pembayaran gagal. Silakan coba lagi.', 'error');
                             }
                         );
