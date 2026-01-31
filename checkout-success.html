@@ -300,82 +300,99 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/supabase-config.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('order_id');
-        const statusParam = urlParams.get('status'); // Optional hint from frontend redirect
-
-        // Init Supabase
-        const supabase = window.getSupabase ? window.getSupabase() : null;
-
         document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id');
+            const statusParam = urlParams.get('status');
+
             if (!orderId) {
                 window.location.href = '/';
                 return;
             }
 
-            document.getElementById('success-order-id').textContent = orderId;
-            document.getElementById('pending-order-id').textContent = orderId;
+            const successOrderIdEl = document.getElementById('success-order-id');
+            const pendingOrderIdEl = document.getElementById('pending-order-id');
+            
+            if(successOrderIdEl) successOrderIdEl.textContent = orderId;
+            if(pendingOrderIdEl) pendingOrderIdEl.textContent = orderId;
 
-            // Check status immediately
+            // Safe Init Supabase
+            const supabase = (typeof getSupabase === 'function') ? getSupabase() : (window.supabase || null);
+            
+            async function checkStatus() {
+                // If no supabase, just rely on params
+                if (!supabase) {
+                    console.warn('Supabase not initialized, using params');
+                    handleStatus(statusParam || 'pending');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from('orders')
+                        .select('status, payment_method')
+                        .eq('id', orderId)
+                        .single();
+
+                    if (error) {
+                        // On 406 or Not Found, fallback to URL param
+                        console.warn('Order check failed/not found, cascading to param:', error.message);
+                        handleStatus(statusParam || 'pending');
+                        return;
+                    }
+
+                    if (data && data.status) {
+                        handleStatus(data.status);
+                    } else {
+                         handleStatus(statusParam || 'pending');
+                    }
+
+                } catch (e) {
+                    console.error('Critical error checking status:', e);
+                    handleStatus(statusParam || 'error');
+                }
+            }
+
+            // Start check
             await checkStatus();
 
-            // Auto-refresh status if pending (every 5 seconds)
-            if (currentStatus === 'pending') {
-                setInterval(checkStatus, 5000);
-            }
+            // Auto-refresh if pending
+            setInterval(async () => {
+                 if (currentStatus === 'pending' || currentStatus === 'loading') {
+                     await checkStatus();
+                 }
+            }, 5000);
         });
 
         let currentStatus = 'loading';
 
-        async function checkStatus() {
-            if (!supabase) {
-                // Determine only by URL param if supabase not configured (fallback)
-                handleStatus(statusParam || 'pending');
-                return;
-            }
-
-            try {
-                const { data, error } = await supabase
-                    .from('orders')
-                    .select('status, payment_method')
-                    .eq('id', orderId)
-                    .single();
-
-                if (error || !data) {
-                    // Fallback to URL param if DB check fails (or order not found yet)
-                    console.warn('DB Check failed, using URL param', error);
-                    handleStatus(statusParam || 'pending');
-                } else {
-                    handleStatus(data.status);
-                }
-            } catch (e) {
-                console.error('Error checking status:', e);
-                handleStatus('error');
-            }
-        }
-
         function handleStatus(status) {
-            // Hide all first
-            document.getElementById('loading-state').style.display = 'none';
-            document.getElementById('success-state').style.display = 'none';
-            document.getElementById('pending-state').style.display = 'none';
-            document.getElementById('error-state').style.display = 'none';
+            // Safe DOM check
+            const loader = document.getElementById('loading-state');
+            const success = document.getElementById('success-state');
+            const pending = document.getElementById('pending-state');
+            const error = document.getElementById('error-state');
+
+            if(loader) loader.style.display = 'none';
+            if(success) success.style.display = 'none';
+            if(pending) pending.style.display = 'none';
+            if(error) error.style.display = 'none';
 
             currentStatus = status;
 
-            // Normalization
-            if (status === 'settlement' || status === 'capture' || status === 'paid' || status === 'success') {
-                document.getElementById('success-state').style.display = 'block';
-                document.body.style.backgroundColor = '#ecfdf5'; // Light green bg
-            } else if (status === 'pending' || status === 'midtrans_popup') {
-                document.getElementById('pending-state').style.display = 'block';
-                document.body.style.backgroundColor = '#fffbeb'; // Light yellow bg
-            } else if (status === 'deny' || status === 'expire' || status === 'cancel' || status === 'error') {
-                document.getElementById('error-state').style.display = 'block';
-                document.body.style.backgroundColor = '#fef2f2'; // Light red bg
+            // Normalize status strings
+            const s = (status || '').toLowerCase();
+
+            if (s === 'settlement' || s === 'capture' || s === 'paid' || s === 'success') {
+                if(success) success.style.display = 'block';
+                document.body.style.backgroundColor = '#ecfdf5'; 
+            } else if (s === 'deny' || s === 'expire' || s === 'cancel' || s === 'failure') {
+                if(error) error.style.display = 'block';
+                document.body.style.backgroundColor = '#fef2f2'; 
             } else {
-                // Default fallback
-                document.getElementById('pending-state').style.display = 'block';
+                // Default to pending for 'pending', 'midtrans_popup', or unknown
+                if(pending) pending.style.display = 'block';
+                document.body.style.backgroundColor = '#fffbeb'; 
             }
         }
     </script>
