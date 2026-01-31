@@ -104,17 +104,13 @@ serve(async (req) => {
             });
         }
 
-        // Enable all supported payment methods in popup (except QRIS as requested)
-        const enabledPayments = [
-            'bca_va',
-            'bni_va',
-            'bri_va',
-            'permata_va',
-            'echannel', // Mandiri Bill
-            'other_va'
-        ];
+        // Enable all supported payment methods in popup
+        // By removing enabled_payments or not sending it, Midtrans will show all methods enabled in Dashboard
+        // But user explicitly asked to "put all types", so we can either list them or just let Dashboard decide.
+        // Letting Dashboard decide is safer/flexible. However, some might be "active on dashboard but not in snap" if filtered.
+        // Let's remove the filter entirely to show EVERYTHING the account supports.
 
-        console.log('Creating transaction with enabled_payments:', enabledPayments);
+        console.log('Creating transaction with ALL available payment methods (dashboard defaults)');
 
         // Build Midtrans transaction payload
         const transactionPayload = {
@@ -128,8 +124,7 @@ serve(async (req) => {
                 email: orderData.customer.email,
                 phone: orderData.customer.phone
             },
-            // Enable all selected payment methods
-            enabled_payments: enabledPayments,
+            // enabled_payments removed to allow ALL methods configured in Midtrans Dashboard
             callbacks: {
                 finish: `${req.headers.get('origin') || 'https://cartlink.id'}/checkout-success?order_id=${orderData.orderId}`
             }
