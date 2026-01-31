@@ -104,24 +104,17 @@ serve(async (req) => {
             });
         }
 
-        // Map frontend payment method to Midtrans enabled_payments
-        // Note: Include fallbacks as some channels may not be active in Sandbox
-        const paymentMethodMap: { [key: string]: string[] } = {
-            'qris': ['qris', 'gopay', 'shopeepay'],  // QRIS pending, fallback to e-wallets
-            'bri_va': ['bri_va', 'bca_va', 'bni_va', 'permata_va'],  // BRI with fallbacks
-            'bca_va': ['bca_va'],
-            'bni_va': ['bni_va', 'bca_va', 'bri_va'],  // BNI with fallbacks
-            'echannel': ['echannel', 'bca_va', 'bni_va'],  // Mandiri Bill with fallbacks
-            'bank_transfer': ['bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
-        };
-
-        // Get enabled payments based on selected method, or all if not specified
-        const selectedMethod = orderData.paymentMethod || 'bank_transfer';
-        const enabledPayments = paymentMethodMap[selectedMethod] || [
-            'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'
+        // Enable all supported payment methods in popup (except QRIS as requested)
+        const enabledPayments = [
+            'bca_va',
+            'bni_va',
+            'bri_va',
+            'permata_va',
+            'echannel', // Mandiri Bill
+            'other_va'
         ];
 
-        console.log('Selected payment method:', selectedMethod, '-> enabled_payments:', enabledPayments);
+        console.log('Creating transaction with enabled_payments:', enabledPayments);
 
         // Build Midtrans transaction payload
         const transactionPayload = {
@@ -135,7 +128,7 @@ serve(async (req) => {
                 email: orderData.customer.email,
                 phone: orderData.customer.phone
             },
-            // Enable only selected payment method(s)
+            // Enable all selected payment methods
             enabled_payments: enabledPayments,
             callbacks: {
                 finish: `${req.headers.get('origin') || 'https://cartlink.id'}/checkout-success?order_id=${orderData.orderId}`

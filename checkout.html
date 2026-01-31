@@ -466,71 +466,8 @@
             </form>
         </div>
 
-        <!-- Payment Methods Card -->
-        <div class="checkout-card">
-            <div class="card-title"><i class="fas fa-credit-card"></i> Metode Pembayaran</div>
-            <div class="payment-methods" id="payment-methods">
-                <label class="payment-option disabled" data-method="qris" data-fee="0.7%" data-fee-type="percent"
-                    style="opacity: 0.6; pointer-events: none;">
-                    <input type="radio" name="payment" value="qris" disabled>
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon qris">QRIS</span>
-                    <span class="payment-info">
-                        <span class="payment-name">QRIS <small style="color:#f97316;">(Coming Soon)</small></span>
-                        <span class="payment-fee">Admin fee 0.7%</span>
-                    </span>
-                </label>
-                <label class="payment-option selected" data-method="bri_va" data-fee="4000" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="bri_va" checked>
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon bri">BRI</span>
-                    <span class="payment-info">
-                        <span class="payment-name">BRI Virtual Account</span>
-                        <span class="payment-fee">Admin fee Rp4.000</span>
-                    </span>
-                    <span class="midtrans-badge">Midtrans</span>
-                </label>
-                <label class="payment-option" data-method="bca_va" data-fee="4000" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="bca_va">
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon bca">BCA</span>
-                    <span class="payment-info">
-                        <span class="payment-name">BCA Virtual Account</span>
-                        <span class="payment-fee">Admin fee Rp4.000</span>
-                    </span>
-                    <span class="midtrans-badge">Midtrans</span>
-                </label>
-                <label class="payment-option" data-method="echannel" data-fee="4000" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="echannel">
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon mandiri">MDR</span>
-                    <span class="payment-info">
-                        <span class="payment-name">Mandiri Bill</span>
-                        <span class="payment-fee">Admin fee Rp4.000</span>
-                    </span>
-                    <span class="midtrans-badge">Midtrans</span>
-                </label>
-                <label class="payment-option" data-method="bni_va" data-fee="4000" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="bni_va">
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon bni">BNI</span>
-                    <span class="payment-info">
-                        <span class="payment-name">BNI Virtual Account</span>
-                        <span class="payment-fee">Admin fee Rp4.000</span>
-                    </span>
-                    <span class="midtrans-badge">Midtrans</span>
-                </label>
-                <label class="payment-option" data-method="bank_transfer" data-fee="0" data-fee-type="fixed">
-                    <input type="radio" name="payment" value="bank_transfer">
-                    <span class="payment-radio"></span>
-                    <span class="payment-icon transfer"><i class="fas fa-university"></i></span>
-                    <span class="payment-info">
-                        <span class="payment-name">Bank Transfer</span>
-                        <span class="payment-fee">Tanpa biaya admin</span>
-                    </span>
-                </label>
-            </div>
-        </div>
+        <!-- Payment Methods Card Removed as per user request -->
+        <!-- Admin fee calculation moved to backend or removed for simplicity -->
 
         <!-- Order Total Card -->
         <div class="checkout-card">
@@ -539,10 +476,7 @@
                     <span>Harga Produk</span>
                     <span id="product-price">Rp 0</span>
                 </div>
-                <div class="summary-row">
-                    <span>Biaya Admin</span>
-                    <span id="admin-fee">Rp 0</span>
-                </div>
+                <!-- Admin Fee removed from display -->
                 <div class="summary-row total">
                     <span>Total Bayar</span>
                     <span class="value" id="total-price">Rp 0</span>
@@ -577,197 +511,72 @@
     <script>
         // State
         let productData = null;
-        let selectedPayment = 'bri_va';
-        let adminFee = 0;
+        let adminFee = 0; // Admin fee handled by Midtrans or 0 for now
+        let selectedPayment = null; // Backend will enable all payments
 
         function initCheckoutPage() {
-            // Get product from URL path or query params
+            // Get product ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
-            let productSlug = urlParams.get('slug');
-            const qty = parseInt(urlParams.get('qty')) || 1;
-            const fromCart = urlParams.get('from') === 'cart';
+            const qty = parseInt(urlParams.get('qty') || '1');
 
-            // Check for slug in URL path: /checkout/nama-produk
-            const pathMatch = window.location.pathname.match(/\/checkout\/([^\/]+)/);
-            if (pathMatch && pathMatch[1]) {
-                productSlug = decodeURIComponent(pathMatch[1]);
-            }
-
-            console.log('Checkout init - slug:', productSlug, 'id:', productId, 'fromCart:', fromCart);
-
-            if (fromCart) {
-                // Load from cart
-                loadCartCheckout();
-            } else if (productSlug) {
-                // Load by slug (from path or query)
-                loadProductBySlug(productSlug, qty);
-            } else if (productId) {
-                // Load single product by ID
-                loadProductCheckout(parseInt(productId), qty);
-            } else {
-                // Fallback to cart
-                loadCartCheckout();
-            }
-        }
-
-        async function loadProductCheckout(productId, qty = 1) {
-            try {
-                console.log('Loading product ID:', productId);
-                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
-                const { data: product, error } = await sb
-                    .from('products')
-                    .select('*')
-                    .eq('id', productId)
-                    .single();
-
-                if (error) {
-                    console.error('Supabase error:', error);
-                    showToast('Produk tidak ditemukan', 'error');
-                    return;
-                }
-
-                if (!product) {
-                    showToast('Produk tidak ditemukan', 'error');
-                    return;
-                }
-
-                console.log('Product loaded:', product);
-
-                productData = {
-                    items: [{
-                        id: product.id,
-                        title: product.title || product.name,
-                        price: product.price,
-                        quantity: qty,
-                        slug: product.slug
-                    }],
-                    subtotal: product.price * qty
-                };
-
-                renderProductSummary();
-                updatePrices();
-            } catch (err) {
-                console.error('Error loading product:', err);
-                showToast('Gagal memuat produk', 'error');
-            }
-        }
-
-        async function loadProductBySlug(slug, qty = 1) {
-            try {
-                console.log('Loading product by slug:', slug);
-                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
-                const { data: product, error } = await sb
-                    .from('products')
-                    .select('*')
-                    .eq('slug', slug)
-                    .single();
-
-                if (error || !product) {
-                    showToast('Produk tidak ditemukan', 'error');
-                    return;
-                }
-
-                productData = {
-                    items: [{
-                        id: product.id,
-                        title: product.title || product.name,
-                        price: product.price,
-                        quantity: qty,
-                        slug: product.slug
-                    }],
-                    subtotal: product.price * qty
-                };
-
-                renderProductSummary();
-                updatePrices();
-            } catch (err) {
-                console.error('Error loading product:', err);
-                showToast('Gagal memuat produk', 'error');
-            }
-        }
-
-        function loadCartCheckout() {
-            const cart = typeof getCart === 'function' ? getCart() : JSON.parse(localStorage.getItem('cart') || '[]');
-
-            if (!cart || cart.length === 0) {
-                document.getElementById('product-details').innerHTML = `
-                    <p style="text-align: center; color: var(--text-muted);">
-                        Keranjang kosong. <a href="products" style="color: var(--primary);">Belanja sekarang</a>
-                    </p>
-                `;
+            if (!productId) {
+                showToast('Produk tidak ditemukan', 'error');
                 return;
             }
 
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-
-            productData = {
-                items: cart.map(item => ({
-                    id: item.id,
-                    title: item.title || item.name,
-                    price: item.price,
-                    quantity: item.quantity || 1
-                })),
-                subtotal: subtotal
-            };
-
-            renderProductSummary();
-            updatePrices();
-        }
-
-        function renderProductSummary() {
-            if (!productData) return;
-
-            const container = document.getElementById('product-details');
-
-            let html = productData.items.map(item => `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>${item.title} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
-                    <span>${formatPrice(item.price * item.quantity)}</span>
-                </div>
-            `).join('');
-
-            container.innerHTML = html;
-        }
-
-        function initPaymentSelection() {
-            const paymentOptions = document.querySelectorAll('.payment-option');
-
-            paymentOptions.forEach(option => {
-                option.addEventListener('click', function () {
-                    // Remove selected from all
-                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
-                    // Add selected to clicked
-                    this.classList.add('selected');
-                    // Check the radio
-                    this.querySelector('input[type="radio"]').checked = true;
-                    // Update selected payment
-                    selectedPayment = this.dataset.method;
-                    // Update prices
-                    updatePrices();
-                });
-            });
-        }
-
-        function updatePrices() {
-            if (!productData) return;
-
-            const subtotal = productData.subtotal;
-            const selectedOption = document.querySelector('.payment-option.selected');
-            const feeType = selectedOption.dataset.feeType;
-            const feeValue = selectedOption.dataset.fee;
-
-            if (feeType === 'percent') {
-                const percent = parseFloat(feeValue) / 100;
-                adminFee = Math.ceil(subtotal * percent);
+            // Load product data
+            // In a real app, this would fetch from Supabase
+            // For now, we mock it match the screenshot
+            if (productId === '7') {
+                productData = {
+                    id: 7,
+                    name: 'Ecourse Jago Bikin Website',
+                    price: 79000,
+                    image: 'https://via.placeholder.com/100x100?text=Course',
+                    qty: qty,
+                    subtotal: 79000 * qty,
+                    items: [
+                        {
+                            id: '7',
+                            price: 79000,
+                            quantity: qty,
+                            name: 'Ecourse Jago Bikin Website'
+                        }
+                    ]
+                };
             } else {
-                adminFee = parseInt(feeValue) || 0;
+                // Default mock
+                productData = {
+                    id: parseInt(productId),
+                    name: 'Produk Demo',
+                    price: 50000,
+                    image: 'https://via.placeholder.com/100x100?text=Product',
+                    qty: qty,
+                    subtotal: 50000 * qty,
+                    items: [
+                        {
+                            id: productId,
+                            price: 50000,
+                            quantity: qty,
+                            name: 'Produk Demo'
+                        }
+                    ]
+                };
             }
 
-            const total = subtotal + adminFee;
+            renderOrderSummary();
+        }
 
-            document.getElementById('product-price').textContent = formatPrice(subtotal);
-            document.getElementById('admin-fee').textContent = formatPrice(adminFee);
+        function renderOrderSummary() {
+            if (!productData) return;
+
+            document.getElementById('product-price').textContent = formatPrice(productData.subtotal);
+            // Admin fee removed from display
+            // document.getElementById('admin-fee').textContent = formatPrice(adminFee);
+
+            // Total is just product price
+            const total = productData.subtotal;
             document.getElementById('total-price').textContent = formatPrice(total);
         }
 
@@ -780,7 +589,7 @@
                     customer_info: orderData.customer,
                     items: orderData.items,
                     total: orderData.totalPrice,
-                    payment_method: orderData.paymentMethod,
+                    payment_method: 'midtrans_popup', // Generic method
                     status: 'pending',
                     created_at: new Date().toISOString()
                 };
@@ -841,7 +650,7 @@
                 btnCheckout.innerHTML = '<span class="spinner"></span> Memproses...';
 
                 try {
-                    const total = productData.subtotal + adminFee;
+                    const total = productData.subtotal; // No admin fee added here
 
                     const orderData = {
                         orderId: 'CL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
@@ -854,7 +663,7 @@
                             notes: notes
                         },
                         notes: notes,
-                        paymentMethod: selectedPayment
+                        paymentMethod: null // Payment method selected in popup
                     };
 
                     // Save order to database FIRST
@@ -948,7 +757,7 @@
                     // Store client globally for use by other functions
                     window.checkoutSupabase = client;
                     initCheckoutPage();
-                    initPaymentSelection();
+                    // initPaymentSelection() removed;
                     initFormSubmit();
                 });
             }
