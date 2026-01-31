@@ -6,22 +6,47 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const MIDTRANS_SERVER_KEY = Deno.env.get('MIDTRANS_SERVER_KEY') || 'SB-Mid-server-ddu2Q6JSZZJ4Gd4dcMsw4180';
+// IMPORTANT: Server Key MUST be set in Supabase environment variables
+// Run: supabase secrets set MIDTRANS_SERVER_KEY=your-server-key
+const MIDTRANS_SERVER_KEY = Deno.env.get('MIDTRANS_SERVER_KEY');
 const MIDTRANS_IS_PRODUCTION = Deno.env.get('MIDTRANS_IS_PRODUCTION') === 'true';
 
 const MIDTRANS_API_URL = MIDTRANS_IS_PRODUCTION
     ? 'https://app.midtrans.com/snap/v1/transactions'
     : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+    'https://www.cartlink.id',
+    'https://cartlink.id',
+    'http://localhost:3000' // for local development
+];
+
+function getCorsHeaders(origin: string | null) {
+    const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+    return {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    };
 }
 
 serve(async (req) => {
+    const origin = req.headers.get('origin');
+    const corsHeaders = getCorsHeaders(origin);
+
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
+    }
+
+    // Validate Server Key is configured
+    if (!MIDTRANS_SERVER_KEY) {
+        console.error('MIDTRANS_SERVER_KEY not configured');
+        return new Response(
+            JSON.stringify({ error: 'Payment gateway not configured. Contact administrator.' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
     }
 
     try {
@@ -121,10 +146,11 @@ serve(async (req) => {
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error creating Snap token:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         return new Response(
-            JSON.stringify({ error: error.message }),
+            JSON.stringify({ error: errorMessage }),
             { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
     }

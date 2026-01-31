@@ -36,98 +36,30 @@ function initMidtransSnap() {
     });
 }
 
-// Get Snap Token - SANDBOX TESTING MODE
-// WARNING: This directly calls Midtrans API from frontend. 
-// For PRODUCTION, use Supabase Edge Function to protect Server Key!
+// Get Snap Token via Supabase Edge Function (SECURE)
+// Server Key is stored in Supabase environment variables, NOT in frontend
 async function getSnapToken(orderData) {
-    // Use Edge Function if available
-    if (typeof MIDTRANS_TOKEN_URL !== 'undefined' && MIDTRANS_TOKEN_URL.includes('supabase')) {
-        try {
-            const response = await fetch(MIDTRANS_TOKEN_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data.token;
-            }
-            console.warn('Edge Function failed, falling back to direct API (SANDBOX ONLY)');
-        } catch (error) {
-            console.warn('Edge Function error, falling back to direct API (SANDBOX ONLY):', error);
-        }
+    if (typeof MIDTRANS_TOKEN_URL === 'undefined' || !MIDTRANS_TOKEN_URL.includes('supabase')) {
+        throw new Error('Payment gateway tidak dikonfigurasi dengan benar. Hubungi administrator.');
     }
-
-    // SANDBOX FALLBACK - Direct API call (NOT FOR PRODUCTION!)
-    const MIDTRANS_SERVER_KEY = 'SB-Mid-server-ddu2Q6JSZZJ4Gd4dcMsw4180';
-    const MIDTRANS_API_URL = 'https://app.sandbox.midtrans.com/snap/v1/transactions';
-
-    // Prepare item details
-    let itemDetails = [];
-    if (orderData.items && orderData.items.length > 0) {
-        itemDetails = orderData.items.map(item => ({
-            id: String(item.id),
-            price: Math.round(item.price),
-            quantity: item.quantity || 1,
-            name: item.title.substring(0, 50)
-        }));
-    } else if (orderData.productId) {
-        itemDetails = [{
-            id: String(orderData.productId),
-            price: Math.round(orderData.pricePerUnit || orderData.totalPrice),
-            quantity: orderData.quantity || 1,
-            name: (orderData.productTitle || 'Product').substring(0, 50)
-        }];
-    } else {
-        itemDetails = [{
-            id: orderData.orderId,
-            price: Math.round(orderData.totalPrice),
-            quantity: 1,
-            name: 'Pembelian Produk Digital'
-        }];
-    }
-
-    const transactionPayload = {
-        transaction_details: {
-            order_id: orderData.orderId,
-            gross_amount: Math.round(orderData.totalPrice)
-        },
-        item_details: itemDetails,
-        customer_details: {
-            first_name: orderData.customer.name,
-            email: orderData.customer.email,
-            phone: orderData.customer.phone
-        },
-        enabled_payments: [
-            "bca_va", "bni_va", "bri_va", "permata_va", "other_va",
-            "gopay", "shopeepay",
-            "qris"
-        ]
-    };
 
     try {
-        const authString = btoa(MIDTRANS_SERVER_KEY + ':');
-        const response = await fetch(MIDTRANS_API_URL, {
+        const response = await fetch(MIDTRANS_TOKEN_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Basic ${authString}`
+                'Authorization': `Bearer ${SUPABASE_KEY}`
             },
-            body: JSON.stringify(transactionPayload)
+            body: JSON.stringify(orderData)
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(`Midtrans API error: ${JSON.stringify(errorData)}`);
+            console.error('Edge Function error:', errorData);
+            throw new Error(errorData.error || 'Gagal memproses pembayaran');
         }
 
         const data = await response.json();
-        console.log('Snap token created:', data.token);
         return data.token;
     } catch (error) {
         console.error('Error getting Snap token:', error);
