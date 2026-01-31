@@ -281,12 +281,18 @@
             document.getElementById('user-display-email').textContent = user.email;
             document.getElementById('avatar-initial').textContent = user.name.charAt(0).toUpperCase();
 
-            document.getElementById('profile-form').addEventListener('submit', function (e) {
+            document.getElementById('profile-form').addEventListener('submit', async function (e) {
                 e.preventDefault();
+
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                }
 
                 const updatedData = {
                     name: document.getElementById('name').value,
-                    whatsapp: document.getElementById('whatsapp').value
+                    phone: document.getElementById('whatsapp').value
                 };
 
                 const newPassword = document.getElementById('password').value;
@@ -294,16 +300,28 @@
                     updatedData.password = newPassword;
                 }
 
-                const result = updateUserInfo(updatedData);
-                if (result.success) {
-                    // Update header again
-                    document.getElementById('user-display-name').textContent = result.user.name;
-                    document.getElementById('avatar-initial').textContent = result.user.name.charAt(0).toUpperCase();
+                try {
+                    const result = await updateUserInfo(updatedData);
+                    if (result.success) {
+                        // Update header again
+                        const userName = updatedData.name;
+                        document.getElementById('user-display-name').textContent = userName;
+                        document.getElementById('avatar-initial').textContent = userName.charAt(0).toUpperCase();
 
-                    // Show notification
-                    const notif = document.getElementById('notif');
-                    notif.classList.add('show');
-                    setTimeout(() => notif.classList.remove('show'), 3000);
+                        // Show notification
+                        const notif = document.getElementById('notif');
+                        notif.classList.add('show');
+                        setTimeout(() => notif.classList.remove('show'), 3000);
+                    } else {
+                        alert('Gagal menyimpan perubahan: ' + (result.message || 'Terjadi kesalahan'));
+                    }
+                } catch (err) {
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Simpan Perubahan';
+                    }
                 }
             });
         });

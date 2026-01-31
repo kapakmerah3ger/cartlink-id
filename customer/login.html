@@ -248,16 +248,31 @@
     <script src="../js/data.js"></script>
     <script src="../js/auth.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', function (e) {
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const result = loginUser(email, password);
-            if (result.success) {
-                window.location.href = 'dashboard.html';
-            } else {
-                alert(result.message);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            }
+
+            try {
+                const result = await loginUser(email, password);
+                if (result.success) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Masuk ke Akun</span> <i class="fas fa-arrow-right"></i>';
+                }
             }
         });
 

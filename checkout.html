@@ -9,132 +9,826 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .checkout-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .checkout-header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .checkout-header .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .checkout-header .logo span {
+            color: var(--primary);
+        }
+
+        /* Card Style */
+        .checkout-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        textarea.form-input {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.03);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
+        }
+
+        .payment-option.selected .payment-radio {
+            border-color: var(--primary);
+        }
+
+        .payment-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .payment-option.selected .payment-radio::after {
+            opacity: 1;
+        }
+
+        .payment-icon {
+            width: 40px;
+            height: 28px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .payment-icon.qris {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .payment-icon.bri {
+            background: #0066b3;
+            color: white;
+        }
+
+        .payment-icon.bca {
+            background: #0066ae;
+            color: white;
+        }
+
+        .payment-icon.mandiri {
+            background: #003d79;
+            color: white;
+        }
+
+        .payment-icon.bni {
+            background: #f15a24;
+            color: white;
+        }
+
+        .payment-icon.transfer {
+            background: #64748b;
+            color: white;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .payment-fee {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .midtrans-badge {
+            font-size: 0.65rem;
+            background: #e2e8f0;
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .summary-row.total .value {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-right: 8px;
+        }
+
+        /* Product Info Badge */
+        .product-info-badge {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .product-info-badge i {
+            color: #3b82f6;
+            margin-top: 2px;
+        }
+
+        .product-info-badge p {
+            font-size: 0.85rem;
+            color: #1e40af;
+            margin: 0;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        .checkout-footer {
+            text-align: center;
+            padding: 24px 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 320px;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .toast.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .toast.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .checkout-container {
+                padding: 16px;
+            }
+
+            .checkout-card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar scrolled" id="navbar">
-        <div class="container">
-            <a href="/" class="logo"><span class="logo-icon"><i class="fas fa-shopping-cart"></i></span><span
-                    class="logo-text">Cart<span class="highlight">Link</span></span></a>
-            <div class="nav-menu" id="nav-menu">
-                <a href="/" class="nav-link">Beranda</a>
-                <a href="products" class="nav-link">Produk</a>
-                <a href="categories" class="nav-link">Kategori</a>
-                <a href="about" class="nav-link">Tentang</a>
-                <a href="contact" class="nav-link">Kontak</a>
-            </div>
-            <div class="nav-actions">
-                <a href="cart" class="cart-link" title="Keranjang Belanja">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span class="cart-counter">0</span>
-                </a>
-                <button class="btn btn-outline btn-sm" onclick="location.href='admin/login'"><i class="fas fa-user"></i>
-                    Admin</button>
-                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="checkout-container">
+        <!-- Header -->
+        <header class="checkout-header">
+            <a href="/" class="logo">Cart<span>Link</span></a>
+        </header>
+
+        <!-- Product Summary Card -->
+        <div class="checkout-card" id="product-summary">
+            <div class="card-title"><i class="fas fa-shopping-bag"></i> Ringkasan Pesanan</div>
+            <div id="product-details">
+                <!-- Akan diisi oleh JS -->
+                <p style="color: var(--text-muted); text-align: center;">Memuat produk...</p>
             </div>
         </div>
-    </nav>
 
-    <section class="page-header">
-        <div class="container">
-            <div class="breadcrumb"><a href="/">Beranda</a> <i class="fas fa-chevron-right"></i> <a
-                    href="products">Produk</a> <i class="fas fa-chevron-right"></i> <span>Checkout</span></div>
-            <h1>Checkout</h1>
-            <p>Lengkapi data untuk menyelesaikan pembelian</p>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <div class="checkout-section">
-                <div class="checkout-form">
-                    <h3><i class="fas fa-user"></i> Data Pembeli</h3>
-                    <form id="checkout-form">
-                        <div class="form-group">
-                            <label for="name">Nama Lengkap <span>*</span></label>
-                            <input type="text" id="name" name="name" required placeholder="Masukkan nama lengkap">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email <span>*</span></label>
-                            <input type="email" id="email" name="email" required placeholder="Masukkan email aktif">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">No. Telepon <span>*</span></label>
-                            <input type="tel" id="phone" name="phone" required placeholder="Contoh: 081234567890">
-                        </div>
-                        <div class="form-group">
-                            <label for="whatsapp">No. WhatsApp (jika berbeda)</label>
-                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Contoh: 081234567890">
-                        </div>
-                        <div class="form-group">
-                            <label for="notes">Catatan (opsional)</label>
-                            <textarea id="notes" name="notes"
-                                placeholder="Tambahkan catatan jika diperlukan"></textarea>
-                        </div>
-
-                        <!-- Payment Methods Info -->
-                        <div class="payment-info-box"
-                            style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
-                            <h4 style="margin-bottom: 0.75rem; color: var(--primary);"><i
-                                    class="fas fa-credit-card"></i> Metode Pembayaran</h4>
-                            <p style="font-size: 0.9rem; color: var(--gray-300); margin: 0;">
-                                Anda akan diarahkan ke halaman pembayaran Midtrans untuk memilih metode pembayaran:
-                            </p>
-                            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;">
-                                <span class="payment-badge"><i class="fas fa-university"></i> Transfer Bank</span>
-                                <span class="payment-badge"><i class="fas fa-wallet"></i> GoPay</span>
-                                <span class="payment-badge"><i class="fas fa-wallet"></i> ShopeePay</span>
-                                <span class="payment-badge"><i class="fas fa-qrcode"></i> QRIS</span>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg" style="width:100%" id="pay-button">
-                            <i class="fas fa-lock"></i> Bayar Sekarang
-                        </button>
-                    </form>
+        <!-- Data Penerima Card -->
+        <div class="checkout-card">
+            <div class="card-title"><i class="fas fa-user"></i> Data Penerima</div>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label class="form-label">Nama <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="name" name="name" required placeholder="Nama Anda">
                 </div>
-                <div id="checkout-product"></div>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">No. WhatsApp <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="phone" name="phone" required
+                        placeholder="No. WhatsApp Anda">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="email" name="email" required placeholder="Email Anda">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Catatan</label>
+                    <textarea class="form-input" id="notes" name="notes"
+                        placeholder="Catatan tambahan (opsional)"></textarea>
+                </div>
+            </form>
         </div>
-    </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2024 CartLink.id. All rights reserved.</p>
+        <!-- Payment Methods Card -->
+        <div class="checkout-card">
+            <div class="card-title"><i class="fas fa-credit-card"></i> Metode Pembayaran</div>
+            <div class="payment-methods" id="payment-methods">
+                <label class="payment-option selected" data-method="qris" data-fee="0.7%" data-fee-type="percent">
+                    <input type="radio" name="payment" value="qris" checked>
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon qris">QRIS</span>
+                    <span class="payment-info">
+                        <span class="payment-name">QRIS</span>
+                        <span class="payment-fee">Admin fee 0.7%</span>
+                    </span>
+                </label>
+                <label class="payment-option" data-method="bri_va" data-fee="4000" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="bri_va">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon bri">BRI</span>
+                    <span class="payment-info">
+                        <span class="payment-name">BRI Virtual Account</span>
+                        <span class="payment-fee">Admin fee Rp4.000</span>
+                    </span>
+                    <span class="midtrans-badge">Midtrans</span>
+                </label>
+                <label class="payment-option" data-method="bca_va" data-fee="4000" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="bca_va">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon bca">BCA</span>
+                    <span class="payment-info">
+                        <span class="payment-name">BCA Virtual Account</span>
+                        <span class="payment-fee">Admin fee Rp4.000</span>
+                    </span>
+                    <span class="midtrans-badge">Midtrans</span>
+                </label>
+                <label class="payment-option" data-method="echannel" data-fee="4000" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="echannel">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon mandiri">MDR</span>
+                    <span class="payment-info">
+                        <span class="payment-name">Mandiri Bill</span>
+                        <span class="payment-fee">Admin fee Rp4.000</span>
+                    </span>
+                    <span class="midtrans-badge">Midtrans</span>
+                </label>
+                <label class="payment-option" data-method="bni_va" data-fee="4000" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="bni_va">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon bni">BNI</span>
+                    <span class="payment-info">
+                        <span class="payment-name">BNI Virtual Account</span>
+                        <span class="payment-fee">Admin fee Rp4.000</span>
+                    </span>
+                    <span class="midtrans-badge">Midtrans</span>
+                </label>
+                <label class="payment-option" data-method="bank_transfer" data-fee="0" data-fee-type="fixed">
+                    <input type="radio" name="payment" value="bank_transfer">
+                    <span class="payment-radio"></span>
+                    <span class="payment-icon transfer"><i class="fas fa-university"></i></span>
+                    <span class="payment-info">
+                        <span class="payment-name">Bank Transfer</span>
+                        <span class="payment-fee">Tanpa biaya admin</span>
+                    </span>
+                </label>
             </div>
         </div>
-    </footer>
+
+        <!-- Order Total Card -->
+        <div class="checkout-card">
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Harga Produk</span>
+                    <span id="product-price">Rp 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Biaya Admin</span>
+                    <span id="admin-fee">Rp 0</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total Bayar</span>
+                    <span class="value" id="total-price">Rp 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Badge -->
+        <div class="product-info-badge">
+            <i class="fas fa-info-circle"></i>
+            <p><strong>Produk Digital</strong><br>Produk akan dikirimkan ke kamu langsung setelah proses pembelian</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="button" class="btn-submit" id="btn-checkout">
+            <i class="fas fa-shopping-cart"></i> Beli Sekarang
+        </button>
+
+        <!-- Footer -->
+        <footer class="checkout-footer">
+            <p>Copyright © 2024 CartLink.id</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script src="js/data.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/midtrans-config.js"></script>
-    <style>
-        .payment-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--primary);
-            padding: 0.4rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+    <script>
+        // State
+        let productData = null;
+        let selectedPayment = 'qris';
+        let adminFee = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initCheckoutPage();
+            initPaymentSelection();
+            initFormSubmit();
+        });
+
+        function initCheckoutPage() {
+            // Get product from URL or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const fromCart = urlParams.get('from') === 'cart';
+
+            if (fromCart) {
+                // Load from cart
+                loadCartCheckout();
+            } else if (productId) {
+                // Load single product
+                loadProductCheckout(productId);
+            } else {
+                // Fallback to cart
+                loadCartCheckout();
+            }
         }
 
-        .payment-badge i {
-            font-size: 0.75rem;
+        async function loadProductCheckout(productId) {
+            try {
+                const { data: product, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('id', productId)
+                    .single();
+
+                if (error || !product) {
+                    showToast('Produk tidak ditemukan', 'error');
+                    return;
+                }
+
+                productData = {
+                    items: [{
+                        id: product.id,
+                        title: product.name || product.title,
+                        price: product.price,
+                        quantity: 1
+                    }],
+                    subtotal: product.price
+                };
+
+                renderProductSummary();
+                updatePrices();
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal memuat produk', 'error');
+            }
         }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            initCheckout();
-        });
+
+        function loadCartCheckout() {
+            const cart = getCart ? getCart() : JSON.parse(localStorage.getItem('cart') || '[]');
+
+            if (!cart || cart.length === 0) {
+                document.getElementById('product-details').innerHTML = `
+                    <p style="text-align: center; color: var(--text-muted);">
+                        Keranjang kosong. <a href="products" style="color: var(--primary);">Belanja sekarang</a>
+                    </p>
+                `;
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+            productData = {
+                items: cart.map(item => ({
+                    id: item.id,
+                    title: item.title || item.name,
+                    price: item.price,
+                    quantity: item.quantity || 1
+                })),
+                subtotal: subtotal
+            };
+
+            renderProductSummary();
+            updatePrices();
+        }
+
+        function renderProductSummary() {
+            if (!productData) return;
+
+            const container = document.getElementById('product-details');
+            
+            let html = productData.items.map(item => `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>${item.title} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                    <span>${formatPrice(item.price * item.quantity)}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
+        }
+
+        function initPaymentSelection() {
+            const paymentOptions = document.querySelectorAll('.payment-option');
+
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected from all
+                    paymentOptions.forEach(opt => opt.classList.remove('selected'));
+                    // Add selected to clicked
+                    this.classList.add('selected');
+                    // Check the radio
+                    this.querySelector('input[type="radio"]').checked = true;
+                    // Update selected payment
+                    selectedPayment = this.dataset.method;
+                    // Update prices
+                    updatePrices();
+                });
+            });
+        }
+
+        function updatePrices() {
+            if (!productData) return;
+
+            const subtotal = productData.subtotal;
+            const selectedOption = document.querySelector('.payment-option.selected');
+            const feeType = selectedOption.dataset.feeType;
+            const feeValue = selectedOption.dataset.fee;
+
+            if (feeType === 'percent') {
+                const percent = parseFloat(feeValue) / 100;
+                adminFee = Math.ceil(subtotal * percent);
+            } else {
+                adminFee = parseInt(feeValue) || 0;
+            }
+
+            const total = subtotal + adminFee;
+
+            document.getElementById('product-price').textContent = formatPrice(subtotal);
+            document.getElementById('admin-fee').textContent = formatPrice(adminFee);
+            document.getElementById('total-price').textContent = formatPrice(total);
+        }
+
+        function initFormSubmit() {
+            const btnCheckout = document.getElementById('btn-checkout');
+            
+            btnCheckout.addEventListener('click', async function() {
+                const name = document.getElementById('name').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const notes = document.getElementById('notes').value.trim();
+
+                // Validation
+                if (!name) {
+                    showToast('Mohon masukkan nama Anda', 'error');
+                    document.getElementById('name').focus();
+                    return;
+                }
+
+                if (!phone) {
+                    showToast('Mohon masukkan nomor WhatsApp', 'error');
+                    document.getElementById('phone').focus();
+                    return;
+                }
+
+                if (!email || !isValidEmail(email)) {
+                    showToast('Mohon masukkan email yang valid', 'error');
+                    document.getElementById('email').focus();
+                    return;
+                }
+
+                if (!productData) {
+                    showToast('Tidak ada produk untuk dibeli', 'error');
+                    return;
+                }
+
+                // Disable button
+                const originalText = btnCheckout.innerHTML;
+                btnCheckout.disabled = true;
+                btnCheckout.innerHTML = '<span class="spinner"></span> Memproses...';
+
+                try {
+                    const total = productData.subtotal + adminFee;
+
+                    const orderData = {
+                        orderId: 'CL-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
+                        items: productData.items,
+                        totalPrice: total,
+                        customer: {
+                            name: name,
+                            email: email,
+                            phone: phone
+                        },
+                        notes: notes,
+                        paymentMethod: selectedPayment
+                    };
+
+                    // Process with Midtrans
+                    if (typeof processPaymentWithMidtrans === 'function') {
+                        await processPaymentWithMidtrans(
+                            orderData,
+                            function(result) {
+                                showToast('Pembayaran berhasil!', 'success');
+                                // Clear cart
+                                if (typeof clearCart === 'function') clearCart();
+                                // Redirect to success page or show success
+                                setTimeout(() => {
+                                    window.location.href = '/';
+                                }, 2000);
+                            },
+                            function(result) {
+                                showToast('Silakan selesaikan pembayaran Anda', 'info');
+                            },
+                            function(result) {
+                                showToast('Pembayaran gagal. Silakan coba lagi.', 'error');
+                            }
+                        );
+                    } else {
+                        showToast('Sistem pembayaran sedang dalam perbaikan', 'error');
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+                } finally {
+                    btnCheckout.disabled = false;
+                    btnCheckout.innerHTML = originalText;
+                }
+            });
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function formatPrice(price) {
+            return 'Rp ' + price.toLocaleString('id-ID');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast visible ' + type;
+
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 4000);
+        }
+
+        // Fallback getCart if not defined
+        if (typeof getCart !== 'function') {
+            function getCart() {
+                return JSON.parse(localStorage.getItem('cart') || '[]');
+            }
+        }
     </script>
 </body>
 

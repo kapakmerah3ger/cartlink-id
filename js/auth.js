@@ -24,7 +24,7 @@ if (supabase) {
             // Redirect if on protected page? Handled by page logic usually
             if (window.location.pathname.includes('/customer/')) {
                 if (!window.location.pathname.includes('login') && !window.location.pathname.includes('register')) {
-                    window.location.href = 'login';
+                    window.location.href = 'login.html';
                 }
             }
         } else if (event === 'USER_UPDATED' && session) {
@@ -102,7 +102,7 @@ async function logoutUser() {
         await supabase.auth.signOut();
     } else {
         localStorage.removeItem(sessionKey);
-        window.location.href = '../index';
+        window.location.href = '../index.html';
     }
 }
 

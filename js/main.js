@@ -1166,7 +1166,7 @@ function renderCategories() {
         return;
     }
 
-    // Icon mapping for fallback
+    // Icon mapping for fallback (Font Awesome classes)
     const iconMap = {
         'ebook': 'fa-book',
         'kelas': 'fa-graduation-cap',
@@ -1176,20 +1176,44 @@ function renderCategories() {
         'audio': 'fa-music'
     };
 
-    container.innerHTML = categoriesData.map(cat => {
-        // Handle icon - could be "fa-book", "book", or emoji
-        let iconClass = cat.icon || iconMap[cat.id] || 'fa-folder';
-        if (iconClass && !iconClass.startsWith('fa-') && !iconClass.includes(' ')) {
-            iconClass = 'fa-' + iconClass;
-        }
+    // Helper function to check if string is emoji
+    function isEmoji(str) {
+        if (!str) return false;
+        // Check if string contains emoji using regex
+        const emojiRegex = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]/u;
+        return emojiRegex.test(str);
+    }
 
-        return `
-            <a href="products?category=${cat.id}" class="category-card">
-                <div class="category-icon"><i class="fas ${iconClass}"></i></div>
-                <h3>${cat.title}</h3>
-                <p>${cat.description || ''}</p>
-                <span class="category-count">${cat.count || ''}</span>
-            </a>
-        `;
+    container.innerHTML = categoriesData.map(cat => {
+        const iconValue = cat.icon || '';
+
+        // Check if icon is emoji or Font Awesome class
+        if (isEmoji(iconValue)) {
+            // Render as emoji
+            return `
+                <a href="products?category=${cat.id}" class="category-card">
+                    <div class="category-icon"><span style="font-size: 2.5rem;">${iconValue}</span></div>
+                    <h3>${cat.title}</h3>
+                    <p>${cat.description || ''}</p>
+                    <span class="category-count">${cat.count || ''}</span>
+                </a>
+            `;
+        } else {
+            // Render as Font Awesome icon
+            let iconClass = iconValue || iconMap[cat.id] || 'fa-folder';
+            if (iconClass && !iconClass.startsWith('fa-') && !iconClass.includes(' ')) {
+                iconClass = 'fa-' + iconClass;
+            }
+
+            return `
+                <a href="products?category=${cat.id}" class="category-card">
+                    <div class="category-icon"><i class="fas ${iconClass}"></i></div>
+                    <h3>${cat.title}</h3>
+                    <p>${cat.description || ''}</p>
+                    <span class="category-count">${cat.count || ''}</span>
+                </a>
+            `;
+        }
     }).join('');
 }
+

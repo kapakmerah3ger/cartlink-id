@@ -3,6 +3,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/lp/:slug",
+      "destination": "/lp/:slug.html"
+    },
+    {
       "source": "/products",
       "destination": "/products.html"
     },

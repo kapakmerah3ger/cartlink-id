@@ -1,6 +1,5 @@
 const SUPABASE_URL = 'https://vptsxtlceielmajlpyda.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdHN4dGxjZWllbG1hamxweWRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwNTM3OTUsImV4cCI6MjA4MzYyOTc5NX0.3rE6I0ZnIFKIvyr71rw4d2t6vqER2i8yxIoKF46lumg';
-
 // Initialize Supabase Client
 // Note: We are using the CDN script, so 'supabase' global object will be available
 function getSupabase() {
