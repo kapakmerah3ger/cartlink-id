@@ -61,7 +61,7 @@ serve(async (req) => {
         }
 
         // Prepare item details
-        let itemDetails = [];
+        let itemDetails: Array<{ id: string, price: number, quantity: number, name: string }> = [];
 
         if (orderData.items && orderData.items.length > 0) {
             // Cart checkout - multiple items
@@ -69,7 +69,7 @@ serve(async (req) => {
                 id: String(item.id),
                 price: Math.round(item.price),
                 quantity: item.quantity || 1,
-                name: item.title.substring(0, 50) // Midtrans limits name to 50 chars
+                name: (item.title || item.name || 'Product').substring(0, 50) // Midtrans limits name to 50 chars
             }));
         } else if (orderData.productId) {
             // Single product checkout
@@ -89,11 +89,26 @@ serve(async (req) => {
             }];
         }
 
+        // Calculate item sum and add admin fee if necessary
+        const itemSum = itemDetails.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const grossAmount = Math.round(orderData.totalPrice);
+
+        // If total is greater than items sum, add admin fee as separate item
+        if (grossAmount > itemSum) {
+            const adminFee = grossAmount - itemSum;
+            itemDetails.push({
+                id: 'admin_fee',
+                price: adminFee,
+                quantity: 1,
+                name: 'Biaya Admin'
+            });
+        }
+
         // Build Midtrans transaction payload
         const transactionPayload = {
             transaction_details: {
                 order_id: orderData.orderId,
-                gross_amount: Math.round(orderData.totalPrice)
+                gross_amount: grossAmount
             },
             item_details: itemDetails,
             customer_details: {

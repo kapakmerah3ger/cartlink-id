@@ -11,6 +11,32 @@ const MIDTRANS_SNAP_URL = MIDTRANS_IS_PRODUCTION
 // Supabase Edge Function URL for creating Snap Token
 const MIDTRANS_TOKEN_URL = `${SUPABASE_URL}/functions/v1/create-snap-token`;
 
+// Fallback showNotification function if not defined elsewhere
+// This ensures compatibility with pages that don't include main.js
+if (typeof window.showNotification === 'undefined') {
+    window.showNotification = function (message, type = 'info') {
+        // Try to use existing toast system if available
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.textContent = message;
+            toast.className = `toast ${type} visible`;
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        } else {
+            // Fallback to console
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+    };
+}
+
+// Make sure showNotification is globally accessible
+function showNotification(message, type = 'info') {
+    if (window.showNotification) {
+        window.showNotification(message, type);
+    }
+}
+
 // Initialize Midtrans Snap
 function initMidtransSnap() {
     return new Promise((resolve, reject) => {
