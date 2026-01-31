@@ -574,19 +574,13 @@
     <script src="js/data.js"></script>
     <script src="js/midtrans-config.js"></script>
     <script>
-        // Initialize Supabase client
-        const supabase = typeof getSupabase === 'function' ? getSupabase() : window._supabaseClient;
+        // Initialize Supabase client - use the same pattern as data.js
+        const supabase = (typeof getSupabase === 'function') ? getSupabase() : window._supabaseClient;
 
         // State
         let productData = null;
         let selectedPayment = 'qris';
         let adminFee = 0;
-
-        document.addEventListener('DOMContentLoaded', function () {
-            initCheckoutPage();
-            initPaymentSelection();
-            initFormSubmit();
-        });
 
         function initCheckoutPage() {
             // Get product from URL or localStorage
@@ -919,10 +913,27 @@
 
         // Fallback getCart if not defined
         if (typeof getCart !== 'function') {
-            function getCart() {
+            window.getCart = function () {
                 return JSON.parse(localStorage.getItem('cart') || '[]');
-            }
+            };
         }
+
+        // Run initialization - handle if document is already loaded
+        (function runCheckoutInit() {
+            console.log('Running checkout init...');
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    initCheckoutPage();
+                    initPaymentSelection();
+                    initFormSubmit();
+                });
+            } else {
+                // Document already loaded, run immediately
+                initCheckoutPage();
+                initPaymentSelection();
+                initFormSubmit();
+            }
+        })();
     </script>
 </body>
 
