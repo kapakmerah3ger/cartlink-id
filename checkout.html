@@ -689,25 +689,27 @@
                             orderData,
                             async function (result) {
                                 // Update order status to paid
-                                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
-                                await sb
-                                    .from('orders')
-                                    .update({ status: 'paid' })
-                                    .eq('id', orderData.orderId);
-
                                 showToast('Pembayaran berhasil!', 'success');
-                                // Clear cart
-                                if (typeof clearCart === 'function') clearCart();
-                                // Redirect to success page or show success
-                                setTimeout(() => {
-                                    window.location.href = '/';
-                                }, 2000);
+                                const sb = window.checkoutSupabase || getSupabase() || window._supabaseClient;
+                                if (sb) {
+                                    await sb
+                                        .from('orders')
+                                        .update({ status: 'paid' })
+                                        .eq('id', orderData.orderId);
+                                }
+
+                                // Redirect to Success Page
+                                window.location.href = `/checkout-success.html?order_id=${orderData.orderId}&status=success`;
                             },
                             function (result) {
-                                showToast('Silakan selesaikan pembayaran Anda', 'info');
+                                // Pending
+                                console.log('Payment pending', result);
+                                window.location.href = `/checkout-success.html?order_id=${orderData.orderId}&status=pending`;
                             },
                             function (result) {
+                                // Error
                                 showToast('Pembayaran gagal. Silakan coba lagi.', 'error');
+                                window.location.href = `/checkout-success.html?order_id=${orderData.orderId}&status=error`;
                             }
                         );
                     } else {

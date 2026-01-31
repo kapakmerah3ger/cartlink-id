@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Pembayaran - CartLink.id</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+            --secondary-color: #3b82f6;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .status-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 30px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 36px;
+        }
+
+        .status-success .icon-wrapper {
+            background-color: #d1fae5;
+            color: var(--primary-dark);
+        }
+
+        .status-pending .icon-wrapper {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .status-error .icon-wrapper {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .status-message {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .order-id {
+            background: var(--bg-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Product Access Card (Success) */
+        .product-access {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-access h4 {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .access-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .access-icon {
+            width: 32px;
+            height: 32px;
+            background: #e0f2fe;
+            color: var(--secondary-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-container">
+            <div class="spinner"></div>
+            <p style="color: var(--text-muted); font-weight: 500;">Memeriksa status pembayaran...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="success-state" class="status-card status-success" style="display: none;">
+            <div class="icon-wrapper">
+                <i class="fas fa-check"></i>
+            </div>
+            <h1 class="status-title">Pembayaran Berhasil!</h1>
+            <div class="order-id">Order ID: <span id="success-order-id">...</span></div>
+            <p class="status-message">
+                Terima kasih, pembayaran Anda telah kami terima.<br>
+                Silakan akses produk digital Anda di bawah ini.
+            </p>
+
+            <div class="product-access">
+                <h4>Akses Produk:</h4>
+                <div class="access-item">
+                    <div class="access-icon"><i class="fas fa-download"></i></div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;">Ebook / Course</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Siap diunduh</div>
+                    </div>
+                    <button class="btn btn-sm btn-primary"
+                        style="width: auto; margin-left: auto; padding: 8px 16px; font-size: 0.8rem;">
+                        Akses
+                    </button>
+                </div>
+            </div>
+
+            <a href="/" class="btn btn-primary">Kembali ke Beranda</a>
+        </div>
+
+        <!-- Pending State -->
+        <div id="pending-state" class="status-card status-pending" style="display: none;">
+            <div class="icon-wrapper">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <h1 class="status-title">Menunggu Pembayaran</h1>
+            <div class="order-id">Order ID: <span id="pending-order-id">...</span></div>
+            <p class="status-message">
+                Kami menunggu konfirmasi pembayaran dari Anda.<br>
+                Jika sudah membayar, halaman ini akan otomatis terupdate.
+            </p>
+
+            <button onclick="checkStatus()" class="btn btn-primary"
+                style="margin-bottom: 12px; background-color: var(--warning);">
+                <i class="fas fa-sync-alt"></i> Cek Status Pembayaran
+            </button>
+            <a href="https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20butuh%20bantuan%20pembayaran"
+                class="btn btn-secondary">
+                <i class="fab fa-whatsapp"></i> Hubungi Bantuan
+            </a>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="status-card status-error" style="display: none;">
+            <div class="icon-wrapper">
+                <i class="fas fa-times"></i>
+            </div>
+            <h1 class="status-title">Pembayaran Gagal</h1>
+            <p class="status-message">
+                Maaf, terjadi kesalahan saat memproses pembayaran Anda.<br>
+                Silakan coba melakukan pemesanan ulang.
+            </p>
+            <a href="/" class="btn btn-primary" style="background-color: var(--danger);">Coba Lagi</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 CartLink.id - Secure Payment by Midtrans</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id');
+        const statusParam = urlParams.get('status'); // Optional hint from frontend redirect
+
+        // Init Supabase
+        const supabase = window.getSupabase ? window.getSupabase() : null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!orderId) {
+                window.location.href = '/';
+                return;
+            }
+
+            document.getElementById('success-order-id').textContent = orderId;
+            document.getElementById('pending-order-id').textContent = orderId;
+
+            // Check status immediately
+            await checkStatus();
+
+            // Auto-refresh status if pending (every 5 seconds)
+            if (currentStatus === 'pending') {
+                setInterval(checkStatus, 5000);
+            }
+        });
+
+        let currentStatus = 'loading';
+
+        async function checkStatus() {
+            if (!supabase) {
+                // Determine only by URL param if supabase not configured (fallback)
+                handleStatus(statusParam || 'pending');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('status, payment_method')
+                    .eq('id', orderId)
+                    .single();
+
+                if (error || !data) {
+                    // Fallback to URL param if DB check fails (or order not found yet)
+                    console.warn('DB Check failed, using URL param', error);
+                    handleStatus(statusParam || 'pending');
+                } else {
+                    handleStatus(data.status);
+                }
+            } catch (e) {
+                console.error('Error checking status:', e);
+                handleStatus('error');
+            }
+        }
+
+        function handleStatus(status) {
+            // Hide all first
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('success-state').style.display = 'none';
+            document.getElementById('pending-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'none';
+
+            currentStatus = status;
+
+            // Normalization
+            if (status === 'settlement' || status === 'capture' || status === 'paid' || status === 'success') {
+                document.getElementById('success-state').style.display = 'block';
+                document.body.style.backgroundColor = '#ecfdf5'; // Light green bg
+            } else if (status === 'pending' || status === 'midtrans_popup') {
+                document.getElementById('pending-state').style.display = 'block';
+                document.body.style.backgroundColor = '#fffbeb'; // Light yellow bg
+            } else if (status === 'deny' || status === 'expire' || status === 'cancel' || status === 'error') {
+                document.getElementById('error-state').style.display = 'block';
+                document.body.style.backgroundColor = '#fef2f2'; // Light red bg
+            } else {
+                // Default fallback
+                document.getElementById('pending-state').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+
+</html>
