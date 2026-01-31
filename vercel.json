@@ -55,6 +55,10 @@
       "destination": "/help-center.html"
     },
     {
+      "source": "/admin",
+      "destination": "/admin/login.html"
+    },
+    {
       "source": "/admin/dashboard",
       "destination": "/admin/dashboard.html"
     },
