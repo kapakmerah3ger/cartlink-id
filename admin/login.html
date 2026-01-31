@@ -80,7 +80,7 @@
         try {
             if (localStorage.getItem('adminLoggedIn') === 'true') {
                 console.log('User already logged in, redirecting...');
-                window.location.href = 'dashboard.html'; // Explicit extension to be safe
+                window.location.href = '/admin/dashboard'; // Clean URL
             }
         } catch (e) {
             console.error('Local Storage Error:', e);
@@ -128,7 +128,7 @@
                     }));
 
                     alert('Login Berhasil! Mengalihkan...');
-                    window.location.replace('dashboard.html'); // Force replace
+                    window.location.replace('/admin/dashboard'); // Clean URL
                 } else {
                     console.log('Invalid credentials');
                     alert('Gagal! Username: admin / Password: admin123');
