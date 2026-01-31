@@ -1,6 +1,48 @@
 {
   "cleanUrls": false,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/admin/login.html",
+      "destination": "/admin/login",
+      "permanent": true
+    },
+    {
+      "source": "/admin/dashboard.html",
+      "destination": "/admin/dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/admin/products.html",
+      "destination": "/admin/products",
+      "permanent": true
+    },
+    {
+      "source": "/admin/orders.html",
+      "destination": "/admin/orders",
+      "permanent": true
+    },
+    {
+      "source": "/admin/categories.html",
+      "destination": "/admin/categories",
+      "permanent": true
+    },
+    {
+      "source": "/admin/pages.html",
+      "destination": "/admin/pages",
+      "permanent": true
+    },
+    {
+      "source": "/admin/settings.html",
+      "destination": "/admin/settings",
+      "permanent": true
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin/login",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/checkout/:slug",

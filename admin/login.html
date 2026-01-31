@@ -55,24 +55,12 @@
                 </button>
             </form>
             <div class="login-footer">
-                <p>Demo: username <strong>admin</strong>, password <strong>admin123</strong></p>
                 <a href="/"><i class="fas fa-arrow-left"></i> Kembali ke Website</a>
-            </div>
-            <div style="text-align:center;margin-top:20px;">
-                <button onclick="clearSession()"
-                    style="background:none;border:none;color:#666;text-decoration:underline;cursor:pointer;font-size:0.8rem;">
-                    Reset Sesi (Jika Gagal Login)
-                </button>
             </div>
         </div>
     </div>
 
     <script>
-        function clearSession() {
-            localStorage.clear();
-            alert('Sesi dibersihkan. Silakan coba login lagi.');
-            window.location.reload();
-        }
         // Debugging
         console.log('Login Script Loaded');
 
@@ -113,25 +101,23 @@
 
                 console.log('Attempting login with:', username);
 
-                // Simple validation
-                // Accept 'admin' or 'admin@cartlink.id'
-                const isUserValid = (username === 'admin' || username === 'admin@cartlink.id');
-                const isPassValid = (password === 'admin123');
+                // Validate credentials
+                const isUserValid = (username === 'barry@cartlink.id');
+                const isPassValid = (password === '@3Gertriger');
 
                 if (isUserValid && isPassValid) {
                     console.log('Credentials valid. Saving session...');
                     localStorage.setItem('adminLoggedIn', 'true');
                     localStorage.setItem('adminUser', JSON.stringify({
                         username: username,
-                        name: 'Super Admin',
+                        name: 'Barry',
                         role: 'superadmin'
                     }));
 
-                    alert('Login Berhasil! Mengalihkan...');
-                    window.location.replace('/admin/dashboard'); // Clean URL
+                    window.location.replace('/admin/dashboard');
                 } else {
                     console.log('Invalid credentials');
-                    alert('Gagal! Username: admin / Password: admin123');
+                    alert('Username atau password salah!');
                 }
             });
         }
