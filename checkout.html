@@ -580,18 +580,26 @@
         let adminFee = 0;
 
         function initCheckoutPage() {
-            // Get product from URL or localStorage
+            // Get product from URL path or query params
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
-            const productSlug = urlParams.get('slug');
+            let productSlug = urlParams.get('slug');
             const qty = parseInt(urlParams.get('qty')) || 1;
             const fromCart = urlParams.get('from') === 'cart';
+
+            // Check for slug in URL path: /checkout/nama-produk
+            const pathMatch = window.location.pathname.match(/\/checkout\/([^\/]+)/);
+            if (pathMatch && pathMatch[1]) {
+                productSlug = decodeURIComponent(pathMatch[1]);
+            }
+
+            console.log('Checkout init - slug:', productSlug, 'id:', productId, 'fromCart:', fromCart);
 
             if (fromCart) {
                 // Load from cart
                 loadCartCheckout();
             } else if (productSlug) {
-                // Load by slug
+                // Load by slug (from path or query)
                 loadProductBySlug(productSlug, qty);
             } else if (productId) {
                 // Load single product by ID

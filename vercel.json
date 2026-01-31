@@ -23,6 +23,10 @@
       "destination": "/cart.html"
     },
     {
+      "source": "/checkout/:slug",
+      "destination": "/checkout.html"
+    },
+    {
       "source": "/checkout",
       "destination": "/checkout.html"
     },
