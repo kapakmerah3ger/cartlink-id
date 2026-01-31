@@ -61,6 +61,10 @@
       "destination": "/products.html"
     },
     {
+      "source": "/checkout-success",
+      "destination": "/checkout-success.html"
+    },
+    {
       "source": "/categories",
       "destination": "/categories.html"
     },
